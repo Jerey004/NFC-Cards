@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NFC Cards">
+<meta name="theme-color" content="#1a1a1a">
+<title>Historical Figure NFC Cards</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   BASE / TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --ink: #1a0f00;
+  --parchment: #f0e6c8;
+  --parchment-dark: #d9c99a;
+  --red: #8b1a1a;
+  --gold: #b8941f;
+  --gold-light: #d4a820;
+  --bg: #1e1e1e;
+  --bg2: #141414;
+  --panel: #242424;
+  --border: #333;
+  --text-dim: #888;
+  --text-mid: #bbb;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+
+body {
+background: var(–bg);
+font-family: ‘IM Fell English’, serif;
+color: var(–ink);
+min-height: 100%;
+-webkit-tap-highlight-color: transparent;
+overscroll-behavior: none;
+}
+
+/* ═══════════════════════════════════════════
+MOBILE LAYOUT (default, < 768px)
+═══════════════════════════════════════════ */
+.app {
+display: flex;
+flex-direction: column;
+min-height: 100dvh;
+}
+
+/* Top bar */
+.topbar {
+background: var(–bg2);
+border-bottom: 1px solid var(–border);
+padding: calc(var(–safe-top) + 0.6rem) 1rem 0.6rem;
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: sticky;
+top: 0;
+z-index: 100;
+}
+.topbar-title {
+font-family: ‘Cinzel’, serif;
+font-size: 0.85rem;
+letter-spacing: 0.15em;
+text-transform: uppercase;
+color: var(–gold);
+}
+.topbar-sub {
+font-family: ‘Special Elite’, cursive;
+font-size: 0.58rem;
+color: var(–text-dim);
+letter-spacing: 0.08em;
+}
+
+/* Tab bar (mobile) */
+.tab-bar {
+display: flex;
+background: var(–bg2);
+border-bottom: 1px solid var(–border);
+position: sticky;
+top: 56px;
+z-index: 99;
+}
+.tab-btn {
+flex: 1;
+padding: 0.7rem 0.3rem;
+background: none;
+border: none;
+border-bottom: 2px solid transparent;
+color: var(–text-dim);
+font-family: ‘Special Elite’, cursive;
+font-size: 0.62rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+cursor: pointer;
+transition: all 0.2s;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 0.2rem;
+}
+.tab-btn .tab-icon { font-size: 1.1rem; line-height: 1; }
+.tab-btn.active { color: var(–gold); border-bottom-color: var(–gold); }
+
+/* Content panels */
+.content {
+flex: 1;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+padding-bottom: calc(1rem + var(–safe-bottom));
+}
+
+.tab-panel { display: none; padding: 1rem; }
+.tab-panel.active { display: block; }
+
+/* Form elements */
+.panel {
+background: var(–panel);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 1.1rem;
+margin-bottom: 1rem;
+}
+.panel-title {
+font-family: ‘Cinzel’, serif;
+font-size: 0.68rem;
+letter-spacing: 0.18em;
+text-transform: uppercase;
+color: var(–gold);
+margin-bottom: 1rem;
+padding-bottom: 0.5rem;
+border-bottom: 1px solid var(–border);
+}
+
+.field { margin-bottom: 0.85rem; }
+.field:last-child { margin-bottom: 0; }
+.field label {
+display: block;
+font-family: ‘Special Elite’, cursive;
+font-size: 0.62rem;
+letter-spacing: 0.12em;
+color: var(–text-dim);
+text-transform: uppercase;
+margin-bottom: 0.3rem;
+}
+
+input[type=“text”], textarea {
+width: 100%;
+background: var(–bg2);
+border: 1px solid var(–border);
+color: var(–parchment);
+font-family: ‘Special Elite’, cursive;
+font-size: 1rem; /* prevent iOS zoom */
+padding: 0.65rem 0.75rem;
+border-radius: 6px;
+outline: none;
+transition: border-color 0.2s;
+-webkit-appearance: none;
+appearance: none;
+}
+input[type=“text”]:focus, textarea:focus { border-color: var(–gold); }
+textarea { min-height: 80px; resize: vertical; }
+
+/* Toggle button grids */
+.tog-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 0.5rem;
+}
+.tog-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.tog-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+.tog {
+background: var(–bg2);
+border: 1px solid var(–border);
+color: var(–text-dim);
+font-family: ‘Special Elite’, cursive;
+font-size: 0.6rem;
+letter-spacing: 0.07em;
+padding: 0.55rem 0.3rem;
+cursor: pointer;
+border-radius: 6px;
+text-transform: uppercase;
+transition: all 0.15s;
+text-align: center;
+line-height: 1.35;
+-webkit-appearance: none;
+min-height: 44px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.tog small { display: block; font-size: 0.5rem; color: #555; margin-top: 0.1rem; }
+.tog.active small { color: #a07010; }
+.tog:active { transform: scale(0.97); }
+.tog.active { border-color: var(–gold); color: var(–gold); background: #1f1800; }
+
+/* Action buttons */
+.btn-row { display: flex; gap: 0.6rem; margin-top: 1rem; }
+.btn {
+flex: 1;
+padding: 0.85rem;
+font-family: ‘Cinzel’, serif;
+font-size: 0.68rem;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+border: none;
+cursor: pointer;
+border-radius: 8px;
+transition: all 0.2s;
+min-height: 48px;
+-webkit-appearance: none;
+}
+.btn-gold { background: var(–gold); color: #1a0f00; }
+.btn-gold:active { background: var(–gold-light); }
+.btn-outline { background: transparent; border: 1px solid #444; color: var(–text-mid); }
+.btn-outline:active { border-color: var(–gold); color: var(–gold); }
+.btn-danger { background: transparent; border: 1px solid #4a1a1a; color: #884444; }
+.btn-danger:active { border-color: var(–red); color: var(–red); }
+
+/* Hint box */
+.hint-box {
+background: var(–bg2);
+border: 1px solid #2a2a2a;
+border-radius: 6px;
+padding: 0.65rem 0.75rem;
+font-family: ‘Special Elite’, cursive;
+font-size: 0.62rem;
+color: var(–text-dim);
+letter-spacing: 0.04em;
+line-height: 1.6;
+margin-top: 0.75rem;
+}
+.hint-box strong { color: var(–text-mid); }
+
+/* Saved cards list */
+.saved-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 0.5rem;
+margin-top: 0.75rem;
+max-height: 200px;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+}
+.saved-item {
+background: var(–bg2);
+border: 1px solid #2a2a2a;
+border-radius: 6px;
+padding: 0.55rem 0.6rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+cursor: pointer;
+min-height: 44px;
+}
+.saved-item:active { border-color: var(–gold); }
+.saved-name {
+font-family: ‘Special Elite’, cursive;
+font-size: 0.65rem;
+color: var(–parchment);
+line-height: 1.3;
+}
+.saved-del {
+background: none;
+border: none;
+color: #555;
+cursor: pointer;
+font-size: 1rem;
+padding: 0.25rem;
+min-width: 28px;
+text-align: center;
+-webkit-appearance: none;
+}
+.saved-del:active { color: var(–red); }
+.empty-msg {
+font-family: ‘Special Elite’, cursive;
+font-size: 0.68rem;
+color: #444;
+text-align: center;
+padding: 1.5rem;
+letter-spacing: 0.08em;
+grid-column: 1/-1;
+}
+
+/* Card count badge */
+.badge {
+font-family: ‘Special Elite’, cursive;
+font-size: 0.65rem;
+color: #555;
+}
+
+/* Preview tab */
+.preview-meta {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 0.75rem;
+}
+.preview-meta-label {
+font-family: ‘Cinzel’, serif;
+font-size: 0.68rem;
+letter-spacing: 0.15em;
+text-transform: uppercase;
+color: var(–gold);
+}
+.preview-meta-size {
+font-family: ‘Special Elite’, cursive;
+font-size: 0.6rem;
+color: var(–text-dim);
+}
+#preview-card { display: flex; justify-content: center; }
+
+/* ═══════════════════════════════════════════
+CARD COMPONENT
+═══════════════════════════════════════════ */
+.card {
+position: relative;
+overflow: hidden;
+background: var(–parchment);
+display: flex;
+flex-direction: column;
+}
+.card.style-broadside { background: #f5e8c0; border: 3px double #7a6030; }
+.card.style-propaganda { background: #e8d5b0; border: 4px solid var(–red); }
+.card.style-stamp { background: #f0e8d0; border: 2px solid #5a4020; }
+.card.style-monument { background: #e0d8c8; border: 2px solid #666; }
+
+.card-top-border {
+height: 14px; flex-shrink: 0;
+background: repeating-linear-gradient(90deg, var(–ink) 0, var(–ink) 4px, transparent 4px, transparent 8px);
+opacity: 0.15;
+}
+.card.style-propaganda .card-top-border { background: var(–red); opacity: 1; height: 8px; }
+
+.card-header { padding: 0.45rem 0.75rem 0.3rem; text-align: center; flex-shrink: 0; }
+.card-era { font-family: ‘Special Elite’, cursive; font-size: 0.4rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(–red); }
+.card.style-monument .card-era { color: #555; }
+.card-name { font-family: ‘Cinzel’, serif; font-weight: 700; font-size: 0.95rem; line-height: 1.1; letter-spacing: 0.04em; color: var(–ink); }
+.card.style-propaganda .card-name { font-family: ‘Playfair Display’, serif; font-weight: 900; font-size: 1.05rem; text-transform: uppercase; color: var(–red); }
+.card-dates { font-family: ‘IM Fell English’, serif; font-style: italic; font-size: 0.44rem; color: #7a6030; margin-top: 0.08rem; }
+
+.card-divider { display: flex; align-items: center; gap: 0.3rem; padding: 0 0.75rem; margin: 0.15rem 0; flex-shrink: 0; }
+.card-divider::before, .card-divider::after { content: ‘’; flex: 1; height: 1px; background: var(–ink); opacity: 0.3; }
+.card-divider-ornament { font-size: 0.5rem; color: var(–gold); opacity: 0.8; }
+.card.style-propaganda .card-divider::before,
+.card.style-propaganda .card-divider::after { background: var(–red); opacity: 0.6; }
+
+.card-image-area {
+margin: 0 0.75rem 0.3rem;
+flex: 1 1 auto; min-height: 0;
+background: var(–parchment-dark);
+position: relative; overflow: hidden;
+display: flex; align-items: center; justify-content: center;
+}
+.card.style-stamp .card-image-area { border: 5px solid white; box-shadow: 0 0 0 1px #ccc, inset 0 0 0 1px #ccc; }
+.card.style-monument .card-image-area { border: 2px solid #aaa; background: #d8d0c0; }
+
+.card-image-area img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.card-image-area img.sketch-none    { filter: sepia(0.4) contrast(1.1); mix-blend-mode: normal; }
+.card-image-area img.sketch-woodcut { filter: grayscale(1) contrast(2.4) brightness(1.1) sepia(0.15); mix-blend-mode: multiply; }
+.card-image-area img.sketch-etching { filter: grayscale(1) contrast(3) brightness(1.25); mix-blend-mode: multiply; }
+.card-image-area img.sketch-pencil  { filter: grayscale(1) contrast(1.6) brightness(1.35); mix-blend-mode: multiply; opacity: 0.85; }
+.card-image-area img.sketch-litho   { filter: grayscale(1) contrast(2.8) brightness(0.95) sepia(0.08); mix-blend-mode: multiply; }
+
+.card-image-placeholder { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; opacity: 0.35; }
+.card-image-placeholder svg { width: 36px; height: 36px; }
+.card-image-placeholder span { font-family: ‘Special Elite’, cursive; font-size: 0.4rem; letter-spacing: 0.15em; text-transform: uppercase; }
+
+.card-title-role { padding: 0 0.75rem; text-align: center; font-family: ‘IM Fell English’, serif; font-style: italic; font-size: 0.46rem; color: #5a4020; line-height: 1.3; flex-shrink: 0; }
+.card.style-propaganda .card-title-role { font-style: normal; font-weight: bold; font-size: 0.44rem; letter-spacing: 0.06em; color: #333; }
+
+.card-body { padding: 0.3rem 0.75rem 0.25rem; display: flex; justify-content: space-between; align-items: flex-end; gap: 0.4rem; flex-shrink: 0; }
+.card-quote { font-family: ‘Playfair Display’, serif; font-style: italic; font-size: 0.46rem; line-height: 1.5; color: #2a1800; border-left: 2px solid var(–gold); padding-left: 0.4rem; flex: 1; }
+.card.style-broadside .card-quote { font-family: ‘IM Fell English’, serif; font-size: 0.48rem; border-left: none; text-align: center; padding: 0.2rem 0.3rem; border-top: 1px solid rgba(0,0,0,0.2); border-bottom: 1px solid rgba(0,0,0,0.2); }
+.card.style-propaganda .card-quote { font-style: normal; font-weight: bold; font-size: 0.5rem; border-left: 3px solid var(–red); color: #1a0000; }
+
+.card-nfc-area { border: 1px dashed rgba(0,0,0,0.2); border-radius: 50%; width: 0.55in; height: 0.55in; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.3); position: relative; flex-shrink: 0; }
+.card-nfc-area::after { content: ‘NFC’; font-family: ‘Special Elite’, cursive; font-size: 0.28rem; letter-spacing: 0.12em; color: rgba(0,0,0,0.3); position: absolute; bottom: 0.1rem; }
+.nfc-waves { display: flex; gap: 2px; align-items: flex-end; margin-bottom: 0.08rem; }
+.nfc-wave { width: 2px; background: rgba(0,0,0,0.2); border-radius: 1px; }
+
+.card-footer { padding: 0.2rem 0.75rem 0.3rem; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+.card-nationality { font-family: ‘Special Elite’, cursive; font-size: 0.34rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,0.35); }
+.card-series { font-family: ‘Cinzel’, serif; font-size: 0.34rem; letter-spacing: 0.08em; color: var(–gold); opacity: 0.7; }
+
+.card-bottom-border { height: 10px; flex-shrink: 0; background: repeating-linear-gradient(90deg, var(–ink) 0, var(–ink) 4px, transparent 4px, transparent 8px); opacity: 0.15; }
+.card.style-propaganda .card-bottom-border { background: var(–red); opacity: 1; height: 6px; }
+
+.card::before { content: ‘’; position: absolute; inset: 0; pointer-events: none; z-index: 10; opacity: 0.4;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 200 200’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.85’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.04’/%3E%3C/svg%3E”); }
+
+/* ═══════════════════════════════════════════
+DESKTOP LAYOUT (>= 768px)
+═══════════════════════════════════════════ */
+@media (min-width: 768px) {
+.app { display: block; }
+.topbar { position: static; padding: 1.2rem 2rem; }
+.topbar-title { font-size: 1.4rem; }
+.topbar-sub { font-size: 0.75rem; }
+.tab-bar { display: none; }
+
+.content { overflow-y: visible; padding-bottom: 0; }
+
+.tab-panel { display: none !important; }
+.desktop-layout { display: grid !important; grid-template-columns: 380px 1fr; gap: 2rem; padding: 1.5rem 2rem 2rem; max-width: 1200px; margin: 0 auto; }
+
+.panel { border-radius: 6px; }
+.tog { font-size: 0.62rem; }
+.btn { font-size: 0.7rem; min-height: 42px; }
+
+input[type=“text”], textarea { font-size: 0.85rem; }
+
+/* Desktop preview is sticky */
+.desktop-preview-col {
+position: sticky;
+top: 1.5rem;
+align-self: start;
+}
+.desktop-preview-col .panel-title { margin-bottom: 0.75rem; }
+}
+
+/* ═══════════════════════════════════════════
+PRINT
+═══════════════════════════════════════════ */
+.print-sheet { display: none; }
+
+@media print {
+
+- { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: white; margin: 0; padding: 0; }
+  .app { display: none !important; }
+  .print-sheet { display: block !important; }
+
+.print-page { width: 8.5in; height: 11in; position: relative; page-break-after: always; overflow: hidden; background: white; }
+.label-cell { position: absolute; overflow: hidden; }
+.label-cell .card { width: 100% !important; height: 100% !important; box-shadow: none !important; margin: 0 !important; }
+.label-cell .card::before { display: none; }
+.print-sheet.fmt-round .label-cell { border-radius: 50%; }
+.print-sheet.fmt-round .label-cell .card { border-radius: 50%; border: none !important; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- TOP BAR -->
+
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">NFC Cards</div>
+      <div class="topbar-sub">Digital Graffiti Project</div>
+    </div>
+    <!-- desktop print btn shown inline -->
+    <button class="btn btn-outline" style="display:none;flex:0;min-width:120px;" id="desk-print-btn" onclick="window.print()">⎙ Print Sheet</button>
+  </div>
+
+  <!-- MOBILE TAB BAR -->
+
+  <div class="tab-bar" id="tab-bar">
+    <button class="tab-btn active" data-tab="edit">
+      <span class="tab-icon">✏️</span>Edit
+    </button>
+    <button class="tab-btn" data-tab="style">
+      <span class="tab-icon">🎨</span>Style
+    </button>
+    <button class="tab-btn" data-tab="format">
+      <span class="tab-icon">🏷️</span>Format
+    </button>
+    <button class="tab-btn" data-tab="preview">
+      <span class="tab-icon">👁️</span>Preview
+    </button>
+    <button class="tab-btn" data-tab="sheet">
+      <span class="tab-icon">📋</span>Sheet
+    </button>
+  </div>
+
+  <!-- MOBILE CONTENT -->
+
+  <div class="content" id="content">
+
+```
+<!-- EDIT TAB -->
+<div class="tab-panel active" id="tab-edit">
+  <div class="panel">
+    <div class="panel-title">Card Details</div>
+    <div class="field"><label>Full Name</label>
+      <input type="text" id="inp-name" placeholder="Frederick Douglass" value="Frederick Douglass"></div>
+    <div class="field"><label>Birth – Death Years</label>
+      <input type="text" id="inp-dates" placeholder="1818 – 1895" value="1818 – 1895"></div>
+    <div class="field"><label>Title / Role</label>
+      <input type="text" id="inp-role" placeholder="Abolitionist · Author · Statesman" value="Abolitionist · Author · Statesman"></div>
+    <div class="field"><label>Nationality / Origin</label>
+      <input type="text" id="inp-nation" placeholder="American" value="American"></div>
+    <div class="field"><label>Era / Period</label>
+      <input type="text" id="inp-era" placeholder="Antebellum America" value="Antebellum America"></div>
+    <div class="field"><label>Quote / Excerpt</label>
+      <textarea id="inp-quote">"Once you learn to read, you will be forever free."</textarea></div>
+    <div class="field"><label>NFC URL</label>
+      <input type="text" id="inp-url" placeholder="https://..."></div>
+    <div class="field"><label>Series Name</label>
+      <input type="text" id="inp-series" placeholder="Voices of Dissent · Vol. I" value="Voices of Dissent · Vol. I"></div>
+    <div class="field"><label>Portrait Image URL</label>
+      <input type="text" id="inp-img" value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="saveCard()">＋ Add to Sheet</button>
+    <button class="btn btn-outline" onclick="goTab('preview')">Preview →</button>
+  </div>
+</div>
+
+<!-- STYLE TAB -->
+<div class="tab-panel" id="tab-style">
+  <div class="panel">
+    <div class="panel-title">Portrait Effect</div>
+    <div class="tog-grid cols-5">
+      <button class="tog" data-sketch="none">Photo</button>
+      <button class="tog active" data-sketch="woodcut">Wood-cut</button>
+      <button class="tog" data-sketch="etching">Etching</button>
+      <button class="tog" data-sketch="pencil">Pencil</button>
+      <button class="tog" data-sketch="litho">Litho</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Card Style</div>
+    <div class="tog-grid">
+      <button class="tog active" data-style="broadside">Broadside</button>
+      <button class="tog" data-style="propaganda">Propaganda</button>
+      <button class="tog" data-style="stamp">Postage Stamp</button>
+      <button class="tog" data-style="monument">Monument</button>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="saveCard()">＋ Add to Sheet</button>
+    <button class="btn btn-outline" onclick="goTab('preview')">Preview →</button>
+  </div>
+</div>
+
+<!-- FORMAT TAB -->
+<div class="tab-panel" id="tab-format">
+  <div class="panel">
+    <div class="panel-title">Label Format</div>
+    <div class="tog-grid">
+      <button class="tog" data-fmt="4x6">4″ × 6″<small>Avery 8164 · 2-up</small></button>
+      <button class="tog active" data-fmt="3x4">3.33″ × 4″<small>Avery 5164 · 6-up</small></button>
+      <button class="tog" data-fmt="2x4">2″ × 4″<small>Avery 5163 · 10-up</small></button>
+      <button class="tog" data-fmt="letter">Full Page<small>8.5″ × 11″ · 1-up</small></button>
+      <button class="tog" data-fmt="round">3″ Round<small>Avery 22807 · 6-up</small></button>
+      <button class="tog" data-fmt="card">3.5″ × 5″<small>Index card · 4-up</small></button>
+    </div>
+    <div class="hint-box" id="label-hint"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="saveCard()">＋ Add to Sheet</button>
+  </div>
+</div>
+
+<!-- PREVIEW TAB -->
+<div class="tab-panel" id="tab-preview">
+  <div class="panel">
+    <div class="preview-meta">
+      <div class="preview-meta-label">Live Preview</div>
+      <div class="preview-meta-size" id="preview-size-badge"></div>
+    </div>
+    <div id="preview-card"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="saveCard()">＋ Add to Sheet</button>
+    <button class="btn btn-outline" onclick="goTab('sheet')">Sheet →</button>
+  </div>
+</div>
+
+<!-- SHEET TAB -->
+<div class="tab-panel" id="tab-sheet">
+  <div class="panel">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      Print Sheet <span class="badge" id="card-count">(0 cards)</span>
+    </div>
+    <div class="saved-grid" id="saved-list">
+      <div class="empty-msg">No cards added yet</div>
+    </div>
+    <div class="btn-row" style="margin-top:0.75rem;">
+      <button class="btn btn-outline" onclick="window.print()">⎙ Print Sheet</button>
+      <button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>
+    </div>
+  </div>
+  <div class="hint-box" style="margin-top:0;">
+    <strong>Print tip:</strong> On iPhone, tap Share → Print → choose your printer. For precise label alignment use a desktop browser with print scale set to 100%.
+  </div>
+</div>
+```
+
+  </div><!-- /content -->
+
+  <!-- DESKTOP LAYOUT (hidden on mobile, shown via JS) -->
+
+  <div class="desktop-layout" id="desktop-layout" style="display:none;">
+    <!-- Left col: form -->
+    <div class="desktop-form-col">
+      <div class="panel">
+        <div class="panel-title">Card Details</div>
+        <div class="field"><label>Full Name</label>
+          <input type="text" id="d-inp-name" placeholder="Frederick Douglass" value="Frederick Douglass"></div>
+        <div class="field"><label>Birth – Death Years</label>
+          <input type="text" id="d-inp-dates" placeholder="1818 – 1895" value="1818 – 1895"></div>
+        <div class="field"><label>Title / Role</label>
+          <input type="text" id="d-inp-role" placeholder="Abolitionist · Author · Statesman" value="Abolitionist · Author · Statesman"></div>
+        <div class="field"><label>Nationality / Origin</label>
+          <input type="text" id="d-inp-nation" placeholder="American" value="American"></div>
+        <div class="field"><label>Era / Period</label>
+          <input type="text" id="d-inp-era" placeholder="Antebellum America" value="Antebellum America"></div>
+        <div class="field"><label>Quote / Excerpt</label>
+          <textarea id="d-inp-quote">"Once you learn to read, you will be forever free."</textarea></div>
+        <div class="field"><label>NFC URL</label>
+          <input type="text" id="d-inp-url" placeholder="https://..."></div>
+        <div class="field"><label>Series Name</label>
+          <input type="text" id="d-inp-series" placeholder="Voices of Dissent · Vol. I" value="Voices of Dissent · Vol. I"></div>
+        <div class="field"><label>Portrait Image URL</label>
+          <input type="text" id="d-inp-img" value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg"></div>
+      </div>
+
+```
+  <div class="panel" style="margin-top:1rem;">
+    <div class="panel-title">Portrait Effect</div>
+    <div class="tog-grid cols-5">
+      <button class="tog" data-dsketch="none">Photo</button>
+      <button class="tog active" data-dsketch="woodcut">Woodcut</button>
+      <button class="tog" data-dsketch="etching">Etching</button>
+      <button class="tog" data-dsketch="pencil">Pencil</button>
+      <button class="tog" data-dsketch="litho">Litho</button>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:1rem;">
+    <div class="panel-title">Card Style</div>
+    <div class="tog-grid">
+      <button class="tog active" data-dstyle="broadside">Broadside</button>
+      <button class="tog" data-dstyle="propaganda">Propaganda</button>
+      <button class="tog" data-dstyle="stamp">Postage Stamp</button>
+      <button class="tog" data-dstyle="monument">Monument</button>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:1rem;">
+    <div class="panel-title">Label Format</div>
+    <div class="tog-grid">
+      <button class="tog" data-dfmt="4x6">4″ × 6″<small>Avery 8164 · 2-up</small></button>
+      <button class="tog active" data-dfmt="3x4">3.33″ × 4″<small>Avery 5164 · 6-up</small></button>
+      <button class="tog" data-dfmt="2x4">2″ × 4″<small>Avery 5163 · 10-up</small></button>
+      <button class="tog" data-dfmt="letter">Full Page<small>8.5″ × 11″ · 1-up</small></button>
+      <button class="tog" data-dfmt="round">3″ Round<small>Avery 22807 · 6-up</small></button>
+      <button class="tog" data-dfmt="card">3.5″ × 5″<small>Index card · 4-up</small></button>
+    </div>
+    <div class="hint-box" id="d-label-hint"></div>
+  </div>
+
+  <div class="btn-row" style="margin-top:1rem;">
+    <button class="btn btn-gold" onclick="saveCard()">＋ Add to Sheet</button>
+  </div>
+
+  <div class="panel" style="margin-top:1rem;">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      Print Sheet <span class="badge" id="d-card-count">(0 cards)</span>
+    </div>
+    <div class="saved-grid" id="d-saved-list">
+      <div class="empty-msg">No cards added yet</div>
+    </div>
+    <div class="btn-row" style="margin-top:0.75rem;">
+      <button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>
+    </div>
+  </div>
+</div>
+
+<!-- Right col: preview sticky -->
+<div class="desktop-preview-col">
+  <div class="panel">
+    <div class="preview-meta" style="margin-bottom:0.75rem;">
+      <div class="preview-meta-label">Live Preview</div>
+      <div class="preview-meta-size" id="d-preview-size-badge"></div>
+    </div>
+    <div id="d-preview-card"></div>
+  </div>
+</div>
+```
+
+  </div><!-- /desktop-layout -->
+
+</div><!-- /app -->
+
+<!-- PRINT SHEET -->
+
+<div class="print-sheet" id="print-sheet"></div>
+
+<script>
+/* ─── Data ─── */
+const FORMATS = {
+  '4x6':  { w:4,    h:6,   cols:2, rows:3, mTop:0.5,  mLeft:0.19, gX:0.19, gY:0,    per:6,  avery:'Avery 8164',  hint:'Large format — portrait really pops. Ideal for walls, doors, boards.' },
+  '3x4':  { w:3.33, h:4,   cols:2, rows:3, mTop:0.5,  mLeft:0.19, gX:0.19, gY:0,    per:6,  avery:'Avery 5164',  hint:'Sweet spot — big enough to read, small enough for anywhere. 6 per sheet.' },
+  '2x4':  { w:4,    h:2,   cols:2, rows:5, mTop:0.5,  mLeft:0.19, gX:0.19, gY:0,    per:10, avery:'Avery 5163',  hint:'Classic address label. Cheap, subtle — 10 per sheet. Fits inside books.' },
+  'letter':{ w:7.5, h:10,  cols:1, rows:1, mTop:0.5,  mLeft:0.5,  gX:0,    gY:0,    per:1,  avery:'Full page',   hint:'One full poster-card per page. Print on full-page label stock or cardstock.' },
+  'round':{ w:3,    h:3,   cols:3, rows:3, mTop:0.69, mLeft:0.75, gX:0.63, gY:0.25, per:9,  avery:'Avery 22807', hint:'Circular medallion format. Unusual shape draws attention on flat surfaces.' },
+  'card': { w:3.5,  h:5,   cols:2, rows:2, mTop:0.5,  mLeft:0.75, gX:0.5,  gY:0.25, per:4,  avery:'Index card',  hint:'Standard trading card size. Print on cardstock, cut apart. Most durable.' },
+};
+
+let savedCards = [];
+let currentStyle  = 'broadside';
+let currentSketch = 'woodcut';
+let currentFmt    = '3x4';
+let isDesktop     = false;
+
+/* ─── Card HTML builder ─── */
+function buildCard(d) {
+  const sc = `style-${d.style||'broadside'}`;
+  const sk = `sketch-${d.sketch||'woodcut'}`;
+  const img = d.img
+    ? `<img src="${d.img}" alt="" class="${sk}" onerror="this.style.display='none'">`
+    : `<div class="card-image-placeholder"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="8" width="48" height="48" rx="2"/><circle cx="32" cy="26" r="10"/><path d="M8 56 Q32 38 56 56"/></svg><span>Portrait</span></div>`;
+  return `<div class="card ${sc}">
+    <div class="card-top-border"></div>
+    <div class="card-header">
+      <div class="card-era">${d.era||''}</div>
+      <div class="card-name">${d.name||'Unknown'}</div>
+      <div class="card-dates">${d.dates||''}</div>
+    </div>
+    <div class="card-divider"><span class="card-divider-ornament">✦</span></div>
+    <div class="card-image-area">${img}</div>
+    <div class="card-title-role">${d.role||''}</div>
+    <div class="card-body">
+      <div class="card-quote">${d.quote||''}</div>
+      <div class="card-nfc-area">
+        <div class="nfc-waves">
+          <div class="nfc-wave" style="height:5px"></div><div class="nfc-wave" style="height:8px"></div>
+          <div class="nfc-wave" style="height:11px"></div><div class="nfc-wave" style="height:8px"></div>
+          <div class="nfc-wave" style="height:5px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="card-nationality">${d.nation||''}</div>
+      <div class="card-series">${d.series||''}</div>
+    </div>
+    <div class="card-bottom-border"></div>
+  </div>`;
+}
+
+/* ─── Read form (mobile or desktop) ─── */
+function getFormData() {
+  const pfx = isDesktop ? 'd-inp' : 'inp';
+  return {
+    name:   document.getElementById(`${pfx}-name`).value,
+    dates:  document.getElementById(`${pfx}-dates`).value,
+    role:   document.getElementById(`${pfx}-role`).value,
+    nation: document.getElementById(`${pfx}-nation`).value,
+    era:    document.getElementById(`${pfx}-era`).value,
+    quote:  document.getElementById(`${pfx}-quote`).value,
+    url:    document.getElementById(`${pfx}-url`).value,
+    series: document.getElementById(`${pfx}-series`).value,
+    img:    document.getElementById(`${pfx}-img`).value,
+    style:  currentStyle,
+    sketch: currentSketch,
+    fmt:    currentFmt,
+  };
+}
+
+/* ─── Preview ─── */
+function updatePreview() {
+  const fmt = FORMATS[currentFmt];
+  const maxW = isDesktop ? 420 : window.innerWidth - 64;
+  const scale = Math.min(1, maxW / (fmt.w * 96));
+  const pw = Math.round(fmt.w * 96 * scale);
+  const ph = Math.round(fmt.h * 96 * scale);
+  const d = getFormData();
+  const html = buildCard(d);
+  const badge = `${fmt.w}″ × ${fmt.h}″ · ${fmt.avery}`;
+  const hintHtml = `<strong>${fmt.avery}</strong> — ${fmt.hint} <strong>${fmt.per} per sheet.</strong>`;
+
+  function injectPreview(wrapId, badgeId, hintId) {
+    const wrap = document.getElementById(wrapId);
+    if (!wrap) return;
+    wrap.innerHTML = html;
+    const card = wrap.querySelector('.card');
+    if (card) { card.style.width=pw+'px'; card.style.height=ph+'px'; card.style.boxShadow='0 8px 40px rgba(0,0,0,0.5)'; card.style.margin='0 auto'; }
+    const b = document.getElementById(badgeId); if (b) b.textContent = badge;
+    const h = document.getElementById(hintId);  if (h) h.innerHTML = hintHtml;
+  }
+
+  injectPreview('preview-card',   'preview-size-badge', 'label-hint');
+  injectPreview('d-preview-card', 'd-preview-size-badge', 'd-label-hint');
+}
+
+/* ─── Print sheet ─── */
+function buildPrintSheet() {
+  const fmt = FORMATS[currentFmt];
+  const sheet = document.getElementById('print-sheet');
+  sheet.className = `print-sheet fmt-${currentFmt}`;
+  if (!savedCards.length) { sheet.innerHTML = ''; return; }
+  const pages = Math.ceil(savedCards.length / fmt.per);
+  let html = '';
+  for (let p = 0; p < pages; p++) {
+    const batch = savedCards.slice(p * fmt.per, (p+1) * fmt.per);
+    let cells = '';
+    for (let i = 0; i < batch.length; i++) {
+      const col = i % fmt.cols, row = Math.floor(i / fmt.cols);
+      const left = fmt.mLeft + col * (fmt.w + fmt.gX);
+      const top  = fmt.mTop  + row * (fmt.h + fmt.gY);
+      cells += `<div class="label-cell" style="left:${left}in;top:${top}in;width:${fmt.w}in;height:${fmt.h}in;">${buildCard(batch[i])}</div>`;
+    }
+    html += `<div class="print-page">${cells}</div>`;
+  }
+  sheet.innerHTML = html;
+}
+
+/* ─── Save / delete / clear ─── */
+function saveCard() {
+  const d = getFormData();
+  if (!d.name) return;
+  savedCards.push(d);
+  renderSavedList();
+  buildPrintSheet();
+  if (!isDesktop) goTab('sheet');
+}
+function deleteCard(i) { savedCards.splice(i,1); renderSavedList(); buildPrintSheet(); }
+function clearAll() { savedCards=[]; renderSavedList(); buildPrintSheet(); }
+
+function loadCard(i) {
+  const d = savedCards[i];
+  const pfx = isDesktop ? 'd-inp' : 'inp';
+  document.getElementById(`${pfx}-name`).value   = d.name;
+  document.getElementById(`${pfx}-dates`).value  = d.dates;
+  document.getElementById(`${pfx}-role`).value   = d.role;
+  document.getElementById(`${pfx}-nation`).value = d.nation;
+  document.getElementById(`${pfx}-era`).value    = d.era;
+  document.getElementById(`${pfx}-quote`).value  = d.quote;
+  document.getElementById(`${pfx}-url`).value    = d.url;
+  document.getElementById(`${pfx}-series`).value = d.series;
+  document.getElementById(`${pfx}-img`).value    = d.img;
+  currentStyle  = d.style;
+  currentSketch = d.sketch||'woodcut';
+  currentFmt    = d.fmt||'3x4';
+  syncToggles();
+  updatePreview();
+  if (!isDesktop) goTab('edit');
+}
+
+function renderSavedList() {
+  const count = `(${savedCards.length} card${savedCards.length!==1?'s':''})`;
+  ['card-count','d-card-count'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=count; });
+  const inner = savedCards.length
+    ? savedCards.map((c,i)=>`<div class="saved-item" onclick="loadCard(${i})"><span class="saved-name">${c.name}</span><button class="saved-del" onclick="event.stopPropagation();deleteCard(${i})">✕</button></div>`).join('')
+    : '<div class="empty-msg">No cards added yet</div>';
+  ['saved-list','d-saved-list'].forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML=inner; });
+}
+
+/* ─── Sync toggle active states ─── */
+function syncToggles() {
+  document.querySelectorAll('[data-sketch],[data-dsketch]').forEach(b => {
+    const v = b.dataset.sketch || b.dataset.dsketch;
+    b.classList.toggle('active', v === currentSketch);
+  });
+  document.querySelectorAll('[data-style],[data-dstyle]').forEach(b => {
+    const v = b.dataset.style || b.dataset.dstyle;
+    b.classList.toggle('active', v === currentStyle);
+  });
+  document.querySelectorAll('[data-fmt],[data-dfmt]').forEach(b => {
+    const v = b.dataset.fmt || b.dataset.dfmt;
+    b.classList.toggle('active', v === currentFmt);
+  });
+}
+
+/* ─── Tab navigation (mobile) ─── */
+function goTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById(`tab-${id}`);
+  if (panel) panel.classList.add('active');
+  const btn = document.querySelector(`.tab-btn[data-tab="${id}"]`);
+  if (btn) btn.classList.add('active');
+}
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => goTab(btn.dataset.tab)));
+
+/* ─── Toggle button events ─── */
+document.querySelectorAll('[data-sketch]').forEach(btn => btn.addEventListener('click', () => {
+  currentSketch = btn.dataset.sketch; syncToggles(); updatePreview();
+}));
+document.querySelectorAll('[data-dsketch]').forEach(btn => btn.addEventListener('click', () => {
+  currentSketch = btn.dataset.dsketch; syncToggles(); updatePreview();
+}));
+document.querySelectorAll('[data-style]').forEach(btn => btn.addEventListener('click', () => {
+  currentStyle = btn.dataset.style; syncToggles(); updatePreview();
+}));
+document.querySelectorAll('[data-dstyle]').forEach(btn => btn.addEventListener('click', () => {
+  currentStyle = btn.dataset.dstyle; syncToggles(); updatePreview();
+}));
+document.querySelectorAll('[data-fmt]').forEach(btn => btn.addEventListener('click', () => {
+  currentFmt = btn.dataset.fmt; syncToggles(); buildPrintSheet(); updatePreview();
+}));
+document.querySelectorAll('[data-dfmt]').forEach(btn => btn.addEventListener('click', () => {
+  currentFmt = btn.dataset.dfmt; syncToggles(); buildPrintSheet(); updatePreview();
+}));
+
+/* ─── Live input update ─── */
+document.querySelectorAll('input[type="text"], textarea').forEach(el => el.addEventListener('input', updatePreview));
+
+/* ─── Responsive: switch between mobile/desktop ─── */
+function applyLayout() {
+  const desktop = window.innerWidth >= 768;
+  if (desktop === isDesktop) return;
+  isDesktop = desktop;
+
+  const content = document.getElementById('content');
+  const desktopLayout = document.getElementById('desktop-layout');
+  const tabBar = document.getElementById('tab-bar');
+  const printBtn = document.getElementById('desk-print-btn');
+
+  if (desktop) {
+    content.style.display = 'none';
+    tabBar.style.display = 'none';
+    desktopLayout.style.display = 'grid';
+    printBtn.style.display = 'block';
+    // Sync mobile → desktop field values
+    const fields = ['name','dates','role','nation','era','quote','url','series','img'];
+    fields.forEach(f => {
+      const mEl = document.getElementById(`inp-${f}`);
+      const dEl = document.getElementById(`d-inp-${f}`);
+      if (mEl && dEl) dEl.value = mEl.value;
+    });
+  } else {
+    content.style.display = '';
+    tabBar.style.display = '';
+    desktopLayout.style.display = 'none';
+    printBtn.style.display = 'none';
+    // Sync desktop → mobile field values
+    const fields = ['name','dates','role','nation','era','quote','url','series','img'];
+    fields.forEach(f => {
+      const mEl = document.getElementById(`inp-${f}`);
+      const dEl = document.getElementById(`d-inp-${f}`);
+      if (mEl && dEl) mEl.value = dEl.value;
+    });
+  }
+  updatePreview();
+}
+
+window.addEventListener('resize', applyLayout);
+applyLayout();
+updatePreview();
+</script>
+
+</body>
+</html>
