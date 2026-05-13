@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" id="root">
+<html lang="en" id="root" class="dk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -55,7 +55,9 @@
   --incol:#1c1c1e;
 }
 
-*,*::before,*::after{
+*,
+*::before,
+*::after{
   box-sizing:border-box;
   margin:0;
   padding:0;
@@ -71,8 +73,6 @@ body{
   font-family:var(--font);
   font-size:15px;
   line-height:1.4;
-  -webkit-tap-highlight-color:transparent;
-  overscroll-behavior:none;
   transition:background .2s,color .2s;
 }
 
@@ -105,7 +105,6 @@ body{
 .topbar-sub{
   font-size:11px;
   color:var(--tdim);
-  margin-top:1px;
 }
 
 .topbar-right{
@@ -119,44 +118,13 @@ body{
   border:1px solid var(--border);
   border-radius:20px;
   padding:5px 12px;
-  font-size:13px;
   color:var(--tmid);
   cursor:pointer;
 }
 
-.tab-bar{
-  display:flex;
-  background:var(--bg2);
-  border-bottom:1px solid var(--border);
-}
-
-.tab-btn{
-  flex:1;
-  padding:10px;
-  background:none;
-  border:none;
-  color:var(--tdim);
-  cursor:pointer;
-}
-
-.tab-btn.on{
-  color:var(--gold);
-  border-bottom:2px solid var(--gold);
-}
-
 .content{
   flex:1;
-  overflow-y:auto;
-  padding-bottom:calc(16px + var(--safe-bottom));
-}
-
-.tab-panel{
-  display:none;
   padding:16px;
-}
-
-.tab-panel.on{
-  display:block;
 }
 
 .panel{
@@ -169,13 +137,11 @@ body{
 
 .ptitle{
   font-size:11px;
-  font-weight:600;
+  font-weight:700;
   letter-spacing:.08em;
   text-transform:uppercase;
   color:var(--gold);
-  margin-bottom:14px;
-  padding-bottom:10px;
-  border-bottom:1px solid var(--border);
+  margin-bottom:12px;
 }
 
 .field{
@@ -184,33 +150,26 @@ body{
 
 .field label{
   display:block;
+  margin-bottom:4px;
   font-size:11px;
   text-transform:uppercase;
   color:var(--tdim);
-  margin-bottom:5px;
 }
 
 input[type=text],
 textarea{
   width:100%;
   background:var(--inbg);
-  border:1px solid var(--border);
   color:var(--incol);
-  font-family:var(--font);
-  font-size:16px;
-  padding:10px 12px;
+  border:1px solid var(--border);
   border-radius:8px;
-  outline:none;
+  padding:10px 12px;
+  font-size:16px;
 }
 
 textarea{
-  min-height:80px;
+  min-height:90px;
   resize:vertical;
-}
-
-input[type=text]:focus,
-textarea:focus{
-  border-color:var(--gold);
 }
 
 .tg{
@@ -222,11 +181,10 @@ textarea:focus{
 .tog{
   background:var(--togbg);
   border:1px solid var(--border);
-  color:var(--tdim);
-  padding:10px 6px;
-  cursor:pointer;
   border-radius:8px;
-  text-align:center;
+  padding:10px;
+  cursor:pointer;
+  color:var(--tdim);
 }
 
 .tog.on{
@@ -243,11 +201,11 @@ textarea:focus{
 
 .btn{
   flex:1;
-  padding:13px 10px;
   border:none;
-  cursor:pointer;
   border-radius:10px;
-  min-height:48px;
+  padding:13px;
+  cursor:pointer;
+  font-weight:700;
 }
 
 .bg{
@@ -261,24 +219,7 @@ textarea:focus{
   color:var(--tmid);
 }
 
-.bd{
-  background:transparent;
-  border:1px solid #4a2020;
-  color:#aa5555;
-}
-
-.hint{
-  background:var(--bg);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:10px 12px;
-  font-size:12px;
-  color:var(--tdim);
-  line-height:1.6;
-  margin-top:10px;
-}
-
-#pc,#dpc{
+#pc{
   display:flex;
   justify-content:center;
 }
@@ -287,29 +228,23 @@ textarea:focus{
   position:relative;
   overflow:hidden;
   background:var(--card-bg,var(--parchment));
+  border:3px double #7a6030;
+  font-family:var(--font-card);
   display:flex;
   flex-direction:column;
-  font-family:var(--font-card);
 }
 
-.card.sb{
-  background:var(--card-bg,#f5e8c0);
-  border:3px double #7a6030;
-}
-
-.card.sp{
-  background:var(--card-bg,#e8d5b0);
-  border:4px solid var(--red);
-}
-
-.card.ss{
-  background:var(--card-bg,#f0e8d0);
-  border:2px solid #5a4020;
-}
-
-.card.sm{
-  background:var(--card-bg,#e0d8c8);
-  border:2px solid #666;
+.ctb,
+.cbb{
+  height:10px;
+  background:repeating-linear-gradient(
+    90deg,
+    var(--ink) 0,
+    var(--ink) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  opacity:.15;
 }
 
 .ch{
@@ -327,7 +262,6 @@ textarea:focus{
 .cname{
   font-weight:700;
   font-size:.95rem;
-  line-height:1.15;
   color:var(--ink);
 }
 
@@ -335,24 +269,65 @@ textarea:focus{
   font-style:italic;
   font-size:.42rem;
   color:#7a6030;
-  margin-top:.06rem;
+}
+
+.cdiv{
+  display:flex;
+  align-items:center;
+  gap:.3rem;
+  padding:0 .75rem;
+  margin:.15rem 0;
+}
+
+.cdiv::before,
+.cdiv::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--ink);
+  opacity:.3;
+}
+
+.corn{
+  color:#b8941f;
 }
 
 .cia{
+  position:relative;
   margin:0 .75rem .3rem;
-  flex:1 1 auto;
+  flex:1;
   background:var(--parchment-dark);
   overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
-  position:relative;
 }
 
 .cia img{
   width:100%;
   height:100%;
   object-fit:cover;
+  object-position:top center;
+}
+
+.cia img.sk-none{
+  filter:sepia(.4) contrast(1.1);
+}
+
+.cia img.sk-woodcut{
+  filter:grayscale(1) contrast(2.4) brightness(1.1) sepia(.15);
+}
+
+.cia img.sk-etching{
+  filter:grayscale(1) contrast(3) brightness(1.25);
+}
+
+.cia img.sk-pencil{
+  filter:grayscale(1) contrast(1.6) brightness(1.35);
+}
+
+.cia img.sk-litho{
+  filter:grayscale(1) contrast(2.8) brightness(.95) sepia(.08);
 }
 
 .crole{
@@ -372,6 +347,8 @@ textarea:focus{
   font-size:.44rem;
   line-height:1.5;
   color:#2a1800;
+  border-left:2px solid #b8941f;
+  padding-left:.4rem;
 }
 
 .cfoot{
@@ -382,7 +359,6 @@ textarea:focus{
 
 .cnat{
   font-size:.32rem;
-  letter-spacing:.1em;
   text-transform:uppercase;
   color:rgba(0,0,0,.35);
 }
@@ -397,32 +373,17 @@ textarea:focus{
   position:absolute;
   inset:0;
   pointer-events:none;
-  opacity:.12;
+  opacity:.2;
 }
 
 @media(min-width:768px){
 
-  .app{
-    display:block;
-  }
-
-  .tab-bar,
   .content{
-    display:none !important;
-  }
-
-  #desklay{
-    display:grid !important;
-    grid-template-columns:400px 1fr;
-    gap:24px;
-    padding:20px 24px 32px;
-    max-width:1200px;
+    max-width:900px;
     margin:0 auto;
+    width:100%;
   }
 
-  #dpb{
-    display:block !important;
-  }
 }
 </style>
 </head>
@@ -431,102 +392,100 @@ textarea:focus{
 
 <div class="app">
 
-<div class="topbar">
-  <div>
-    <div class="topbar-title">NFC Cards</div>
-    <div class="topbar-sub">Digital Graffiti Project</div>
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">NFC Cards</div>
+      <div class="topbar-sub">Digital Graffiti Project</div>
+    </div>
+
+    <div class="topbar-right">
+      <button class="theme-btn" onclick="toggleTheme()">
+        <span id="ticon">☀️</span>
+        <span id="tlabel">Light</span>
+      </button>
+    </div>
   </div>
 
-  <div class="topbar-right">
-    <button class="theme-btn" onclick="toggleTheme()">
-      <span id="ticon">☀️</span>
-      <span id="tlabel">Light</span>
-    </button>
+  <div class="content">
+
+    <div class="panel">
+
+      <div class="ptitle">Card Details</div>
+
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="nm" value="Frederick Douglass" oninput="updatePreview()">
+      </div>
+
+      <div class="field">
+        <label>Birth – Death Years</label>
+        <input type="text" id="dt" value="1818 – 1895" oninput="updatePreview()">
+      </div>
+
+      <div class="field">
+        <label>Title / Role</label>
+        <input type="text" id="ro" value="Abolitionist · Author · Statesman" oninput="updatePreview()">
+      </div>
+
+      <div class="field">
+        <label>Nationality</label>
+        <input type="text" id="na" value="American" oninput="updatePreview()">
+      </div>
+
+      <div class="field">
+        <label>Era</label>
+        <input type="text" id="er" value="Antebellum America" oninput="updatePreview()">
+      </div>
+
+      <div class="field">
+        <label>Quote</label>
+        <textarea id="qu" oninput="updatePreview()">"Once you learn to read, you will be forever free."</textarea>
+      </div>
+
+      <div class="field">
+        <label>Series</label>
+        <input type="text" id="se" value="Voices of Dissent · Vol. I" oninput="updatePreview()">
+      </div>
+
+      <div class="field">
+        <label>Portrait Image URL</label>
+        <input
+          type="text"
+          id="im"
+          value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg"
+          oninput="updatePreview()">
+      </div>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="ptitle">Portrait Effect</div>
+
+      <div class="tg">
+        <button class="tog sk-tog" data-v="none" onclick="setSketch('none')">Photo</button>
+        <button class="tog sk-tog on" data-v="woodcut" onclick="setSketch('woodcut')">Woodcut</button>
+        <button class="tog sk-tog" data-v="etching" onclick="setSketch('etching')">Etching</button>
+        <button class="tog sk-tog" data-v="pencil" onclick="setSketch('pencil')">Pencil</button>
+      </div>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="ptitle">Live Preview</div>
+
+      <div id="pc"></div>
+
+    </div>
+
   </div>
-</div>
 
-<div class="tab-bar">
-  <button class="tab-btn on" onclick="goTab('edit')">Edit</button>
-  <button class="tab-btn" onclick="goTab('preview')">Preview</button>
-</div>
-
-<div class="content">
-
-<div class="tab-panel on" id="tp-edit">
-
-<div class="panel">
-
-<div class="ptitle">Card Details</div>
-
-<div class="field">
-<label>Full Name</label>
-<input type="text" id="mnm" value="Frederick Douglass" oninput="updatePreview()">
-</div>
-
-<div class="field">
-<label>Birth – Death Years</label>
-<input type="text" id="mdt" value="1818 – 1895" oninput="updatePreview()">
-</div>
-
-<div class="field">
-<label>Role</label>
-<input type="text" id="mro" value="Abolitionist · Author · Statesman" oninput="updatePreview()">
-</div>
-
-<div class="field">
-<label>Nationality</label>
-<input type="text" id="mna" value="American" oninput="updatePreview()">
-</div>
-
-<div class="field">
-<label>Era</label>
-<input type="text" id="mer" value="Antebellum America" oninput="updatePreview()">
-</div>
-
-<div class="field">
-<label>Quote</label>
-<textarea id="mqu" oninput="updatePreview()">Once you learn to read, you will be forever free.</textarea>
-</div>
-
-<div class="field">
-<label>Series</label>
-<input type="text" id="mse" value="Voices of Dissent · Vol. I" oninput="updatePreview()">
-</div>
-
-<div class="field">
-<label>Portrait URL</label>
-<input type="text"
-id="mim"
-value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg"
-oninput="updatePreview()">
-</div>
-
-</div>
-
-<div class="brow">
-<button class="btn bg" onclick="saveCard()">Add To Sheet</button>
-<button class="btn bo" onclick="goTab('preview')">Preview</button>
-</div>
-
-</div>
-
-<div class="tab-panel" id="tp-preview">
-
-<div class="panel">
-<div id="pc"></div>
-</div>
-
-</div>
-
-</div>
 </div>
 
 <script>
-let cards = [];
-
-let cStyle = 'broadside';
 let dark = true;
-let cardBg = '';
+let cSketch = 'woodcut';
 
 function esc(s){
   return String(s || '')
@@ -537,9 +496,9 @@ function esc(s){
     .replace(/'/g,'&#39;');
 }
 
-function setTheme(d){
+function toggleTheme(){
 
-  dark = d;
+  dark = !dark;
 
   const root = document.getElementById('root');
 
@@ -552,22 +511,18 @@ function setTheme(d){
     dark ? 'Light' : 'Dark';
 }
 
-function toggleTheme(){
-  setTheme(!dark);
-}
+function setSketch(v){
 
-function goTab(id){
+  cSketch = v;
 
-  document.querySelectorAll('.tab-panel')
-    .forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.sk-tog').forEach(btn => {
+    btn.classList.toggle(
+      'on',
+      btn.dataset.v === v
+    );
+  });
 
-  document.querySelectorAll('.tab-btn')
-    .forEach(b => b.classList.remove('on'));
-
-  document.getElementById('tp-' + id)
-    .classList.add('on');
-
-  event.target.classList.add('on');
+  updatePreview();
 }
 
 function getVal(id){
@@ -577,41 +532,48 @@ function getVal(id){
 
 function getData(){
 
-  return{
-    name:getVal('mnm'),
-    dates:getVal('mdt'),
-    role:getVal('mro'),
-    nation:getVal('mna'),
-    era:getVal('mer'),
-    quote:getVal('mqu'),
-    series:getVal('mse'),
-    img:getVal('mim')
+  return {
+    name:getVal('nm'),
+    dates:getVal('dt'),
+    role:getVal('ro'),
+    nation:getVal('na'),
+    era:getVal('er'),
+    quote:getVal('qu'),
+    series:getVal('se'),
+    img:getVal('im')
   };
 }
 
 function buildCard(d){
 
+  const img = d.img
+    ? `
+      <img
+        src="${esc(d.img)}"
+        class="sk-${esc(cSketch)}"
+        onerror="this.style.display='none'">
+    `
+    : `
+      <div style="opacity:.35;">No Image</div>
+    `;
+
   return `
-    <div class="card sb">
+    <div class="card">
+
+      <div class="ctb"></div>
 
       <div class="ch">
         <div class="cera">${esc(d.era)}</div>
+        <div class="cname">${esc(d.name)}</div>
+        <div class="cdates">${esc(d.dates)}</div>
+      </div>
 
-        <div class="cname">
-          ${esc(d.name)}
-        </div>
-
-        <div class="cdates">
-          ${esc(d.dates)}
-        </div>
+      <div class="cdiv">
+        <span class="corn">✦</span>
       </div>
 
       <div class="cia">
-        ${
-          d.img
-          ? `<img src="${esc(d.img)}">`
-          : ''
-        }
+        ${img}
       </div>
 
       <div class="crole">
@@ -620,19 +582,16 @@ function buildCard(d){
 
       <div class="cbody">
         <div class="cquote">
-          "${esc(d.quote)}"
+          ${esc(d.quote)}
         </div>
       </div>
 
       <div class="cfoot">
-        <div class="cnat">
-          ${esc(d.nation)}
-        </div>
-
-        <div class="cser">
-          ${esc(d.series)}
-        </div>
+        <div class="cnat">${esc(d.nation)}</div>
+        <div class="cser">${esc(d.series)}</div>
       </div>
+
+      <div class="cbb"></div>
 
     </div>
   `;
@@ -640,40 +599,27 @@ function buildCard(d){
 
 function updatePreview(){
 
-  const data = getData();
+  const d = getData();
 
-  const w = document.getElementById('pc');
+  const html = buildCard(d);
 
-  w.innerHTML = buildCard(data);
+  const pc = document.getElementById('pc');
 
-  const c = w.querySelector('.card');
+  pc.innerHTML = html;
 
-  if(c){
+  const card = pc.querySelector('.card');
 
-    c.style.width = '320px';
-    c.style.height = '420px';
+  if(card){
 
-    c.style.boxShadow =
-      '0 6px 32px rgba(0,0,0,.5)';
-
-    c.style.margin = '0 auto';
-
-    if(cardBg){
-      c.style.setProperty('--card-bg',cardBg);
-    }
+    card.style.width = '320px';
+    card.style.height = '420px';
+    card.style.boxShadow = '0 6px 32px rgba(0,0,0,.4)';
   }
 }
 
-function saveCard(){
+toggleTheme();
+toggleTheme();
 
-  const d = getData();
-
-  cards.push(d);
-
-  alert('Card added to sheet.');
-}
-
-setTheme(true);
 updatePreview();
 </script>
 
