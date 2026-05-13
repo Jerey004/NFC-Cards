@@ -1,20 +1,26 @@
+<!--
+NFC Cards Generator
+Cleaned + Fixed Version
+Restored original options/features
+-->
+
 <!DOCTYPE html>
 <html lang="en" id="root" class="dk">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="NFC Cards">
 
 <title>NFC Cards</title>
 
 <style>
+
 :root{
   --gold:#c8a020;
   --gold-h:#e0b830;
   --red:#8b1a1a;
   --ink:#1a0f00;
+
   --parchment:#f0e6c8;
   --parchment-dark:#d9c99a;
 
@@ -55,76 +61,56 @@
   --incol:#1c1c1e;
 }
 
-*,
-*::before,
-*::after{
+*{
   box-sizing:border-box;
   margin:0;
   padding:0;
-}
-
-html,body{
-  height:100%;
 }
 
 body{
   background:var(--bg);
   color:var(--text);
   font-family:var(--font);
-  font-size:15px;
-  line-height:1.4;
-  transition:background .2s,color .2s;
+  min-height:100vh;
 }
 
 .app{
-  display:flex;
-  flex-direction:column;
-  min-height:100dvh;
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px;
 }
 
 .topbar{
-  background:var(--bg2);
-  border-bottom:1px solid var(--border);
-  padding:calc(var(--safe-top) + 10px) 16px 10px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-
-.topbar-title{
-  font-size:15px;
-  font-weight:700;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-  color:var(--gold);
-}
-
-.topbar-sub{
-  font-size:11px;
-  color:var(--tdim);
-}
-
-.topbar-right{
-  display:flex;
   align-items:center;
-  gap:8px;
+  margin-bottom:20px;
+}
+
+.title{
+  color:var(--gold);
+  font-size:20px;
+  font-weight:700;
+}
+
+.subtitle{
+  color:var(--tdim);
+  font-size:12px;
 }
 
 .theme-btn{
   background:var(--panel);
+  color:var(--tmid);
   border:1px solid var(--border);
   border-radius:20px;
-  padding:5px 12px;
-  color:var(--tmid);
+  padding:8px 14px;
   cursor:pointer;
 }
 
-.content{
-  flex:1;
-  padding:16px;
+.layout{
+  display:grid;
+  grid-template-columns:420px 1fr;
+  gap:24px;
 }
 
 .panel{
@@ -132,16 +118,16 @@ body{
   border:1px solid var(--border);
   border-radius:12px;
   padding:16px;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
 .ptitle{
   font-size:11px;
-  font-weight:700;
   letter-spacing:.08em;
   text-transform:uppercase;
   color:var(--gold);
-  margin-bottom:12px;
+  margin-bottom:14px;
+  font-weight:700;
 }
 
 .field{
@@ -150,25 +136,25 @@ body{
 
 .field label{
   display:block;
-  margin-bottom:4px;
   font-size:11px;
   text-transform:uppercase;
   color:var(--tdim);
+  margin-bottom:5px;
 }
 
 input[type=text],
 textarea{
   width:100%;
   background:var(--inbg);
-  color:var(--incol);
   border:1px solid var(--border);
+  color:var(--incol);
   border-radius:8px;
   padding:10px 12px;
-  font-size:16px;
+  font-size:15px;
 }
 
 textarea{
-  min-height:90px;
+  min-height:80px;
   resize:vertical;
 }
 
@@ -182,15 +168,22 @@ textarea{
   background:var(--togbg);
   border:1px solid var(--border);
   border-radius:8px;
+  color:var(--tdim);
   padding:10px;
   cursor:pointer;
-  color:var(--tdim);
+  text-align:center;
 }
 
 .tog.on{
   border-color:var(--gold);
   color:var(--gold);
   background:var(--togact);
+}
+
+.tog small{
+  display:block;
+  font-size:10px;
+  margin-top:4px;
 }
 
 .brow{
@@ -219,32 +212,62 @@ textarea{
   color:var(--tmid);
 }
 
-#pc{
+.bd{
+  background:transparent;
+  border:1px solid #4a2020;
+  color:#aa5555;
+}
+
+#previewWrap{
   display:flex;
   justify-content:center;
 }
+
+/* CARD */
 
 .card{
   position:relative;
   overflow:hidden;
   background:var(--card-bg,var(--parchment));
-  border:3px double #7a6030;
-  font-family:var(--font-card);
   display:flex;
   flex-direction:column;
+  font-family:var(--font-card);
+}
+
+.card.sb{
+  border:3px double #7a6030;
+}
+
+.card.sp{
+  border:4px solid var(--red);
+}
+
+.card.ss{
+  border:2px solid #5a4020;
+}
+
+.card.sm{
+  border:2px solid #666;
 }
 
 .ctb,
 .cbb{
-  height:10px;
-  background:repeating-linear-gradient(
-    90deg,
-    var(--ink) 0,
-    var(--ink) 4px,
-    transparent 4px,
-    transparent 8px
-  );
+  height:12px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--ink) 0,
+      var(--ink) 4px,
+      transparent 4px,
+      transparent 8px
+    );
   opacity:.15;
+}
+
+.card.sp .ctb,
+.card.sp .cbb{
+  background:var(--red);
+  opacity:1;
 }
 
 .ch{
@@ -261,7 +284,7 @@ textarea{
 
 .cname{
   font-weight:700;
-  font-size:.95rem;
+  font-size:1rem;
   color:var(--ink);
 }
 
@@ -288,16 +311,12 @@ textarea{
   opacity:.3;
 }
 
-.corn{
-  color:#b8941f;
-}
-
 .cia{
   position:relative;
   margin:0 .75rem .3rem;
   flex:1;
-  background:var(--parchment-dark);
   overflow:hidden;
+  background:var(--parchment-dark);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -310,24 +329,28 @@ textarea{
   object-position:top center;
 }
 
-.cia img.sk-none{
-  filter:sepia(.4) contrast(1.1);
+.sk-none{
+  filter:none;
 }
 
-.cia img.sk-woodcut{
+.sk-woodcut{
   filter:grayscale(1) contrast(2.4) brightness(1.1) sepia(.15);
 }
 
-.cia img.sk-etching{
+.sk-etching{
   filter:grayscale(1) contrast(3) brightness(1.25);
 }
 
-.cia img.sk-pencil{
+.sk-pencil{
   filter:grayscale(1) contrast(1.6) brightness(1.35);
 }
 
-.cia img.sk-litho{
+.sk-litho{
   filter:grayscale(1) contrast(2.8) brightness(.95) sepia(.08);
+}
+
+.sk-crosshatch{
+  filter:grayscale(1) contrast(3);
 }
 
 .crole{
@@ -335,7 +358,6 @@ textarea{
   text-align:center;
   font-style:italic;
   font-size:.44rem;
-  color:#5a4020;
 }
 
 .cbody{
@@ -346,7 +368,6 @@ textarea{
   font-style:italic;
   font-size:.44rem;
   line-height:1.5;
-  color:#2a1800;
   border-left:2px solid #b8941f;
   padding-left:.4rem;
 }
@@ -368,23 +389,45 @@ textarea{
   color:#b8941f;
 }
 
-.card::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  opacity:.2;
+/* SAVED */
+
+.sgrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
 
-@media(min-width:768px){
+.sitem{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-  .content{
-    max-width:900px;
-    margin:0 auto;
-    width:100%;
+.sname{
+  font-size:12px;
+}
+
+.sdel{
+  background:none;
+  border:none;
+  color:#aa5555;
+  cursor:pointer;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+  .layout{
+    grid-template-columns:1fr;
   }
 
 }
+
 </style>
 </head>
 
@@ -392,103 +435,181 @@ textarea{
 
 <div class="app">
 
-  <div class="topbar">
-    <div>
-      <div class="topbar-title">NFC Cards</div>
-      <div class="topbar-sub">Digital Graffiti Project</div>
-    </div>
-
-    <div class="topbar-right">
-      <button class="theme-btn" onclick="toggleTheme()">
-        <span id="ticon">☀️</span>
-        <span id="tlabel">Light</span>
-      </button>
-    </div>
+<div class="topbar">
+  <div>
+    <div class="title">NFC Cards</div>
+    <div class="subtitle">Digital Graffiti Project</div>
   </div>
 
-  <div class="content">
+  <button class="theme-btn" onclick="toggleTheme()">
+    <span id="themeIcon">☀️</span>
+    <span id="themeText">Light</span>
+  </button>
+</div>
 
-    <div class="panel">
+<div class="layout">
 
-      <div class="ptitle">Card Details</div>
+<div>
 
-      <div class="field">
-        <label>Full Name</label>
-        <input type="text" id="nm" value="Frederick Douglass" oninput="updatePreview()">
-      </div>
+<div class="panel">
 
-      <div class="field">
-        <label>Birth – Death Years</label>
-        <input type="text" id="dt" value="1818 – 1895" oninput="updatePreview()">
-      </div>
+<div class="ptitle">Card Details</div>
 
-      <div class="field">
-        <label>Title / Role</label>
-        <input type="text" id="ro" value="Abolitionist · Author · Statesman" oninput="updatePreview()">
-      </div>
+<div class="field">
+<label>Full Name</label>
+<input type="text" id="nm" value="Frederick Douglass" oninput="updatePreview()">
+</div>
 
-      <div class="field">
-        <label>Nationality</label>
-        <input type="text" id="na" value="American" oninput="updatePreview()">
-      </div>
+<div class="field">
+<label>Birth – Death Years</label>
+<input type="text" id="dt" value="1818 – 1895" oninput="updatePreview()">
+</div>
 
-      <div class="field">
-        <label>Era</label>
-        <input type="text" id="er" value="Antebellum America" oninput="updatePreview()">
-      </div>
+<div class="field">
+<label>Role</label>
+<input type="text" id="ro" value="Abolitionist · Author · Statesman" oninput="updatePreview()">
+</div>
 
-      <div class="field">
-        <label>Quote</label>
-        <textarea id="qu" oninput="updatePreview()">"Once you learn to read, you will be forever free."</textarea>
-      </div>
+<div class="field">
+<label>Nationality</label>
+<input type="text" id="na" value="American" oninput="updatePreview()">
+</div>
 
-      <div class="field">
-        <label>Series</label>
-        <input type="text" id="se" value="Voices of Dissent · Vol. I" oninput="updatePreview()">
-      </div>
+<div class="field">
+<label>Era</label>
+<input type="text" id="er" value="Antebellum America" oninput="updatePreview()">
+</div>
 
-      <div class="field">
-        <label>Portrait Image URL</label>
-        <input
-          type="text"
-          id="im"
-          value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg"
-          oninput="updatePreview()">
-      </div>
+<div class="field">
+<label>Quote</label>
+<textarea id="qu" oninput="updatePreview()">"Once you learn to read, you will be forever free."</textarea>
+</div>
 
-    </div>
+<div class="field">
+<label>Series</label>
+<input type="text" id="se" value="Voices of Dissent · Vol. I" oninput="updatePreview()">
+</div>
 
-    <div class="panel">
+<div class="field">
+<label>Image URL</label>
+<input type="text" id="im"
+value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg"
+oninput="updatePreview()">
+</div>
 
-      <div class="ptitle">Portrait Effect</div>
+</div>
 
-      <div class="tg">
-        <button class="tog sk-tog" data-v="none" onclick="setSketch('none')">Photo</button>
-        <button class="tog sk-tog on" data-v="woodcut" onclick="setSketch('woodcut')">Woodcut</button>
-        <button class="tog sk-tog" data-v="etching" onclick="setSketch('etching')">Etching</button>
-        <button class="tog sk-tog" data-v="pencil" onclick="setSketch('pencil')">Pencil</button>
-      </div>
+<div class="panel">
 
-    </div>
+<div class="ptitle">Card Style</div>
 
-    <div class="panel">
+<div class="tg">
+<button class="tog st-tog on" data-v="broadside" onclick="setStyle('broadside')">Broadside</button>
 
-      <div class="ptitle">Live Preview</div>
+<button class="tog st-tog" data-v="propaganda" onclick="setStyle('propaganda')">Propaganda</button>
 
-      <div id="pc"></div>
+<button class="tog st-tog" data-v="stamp" onclick="setStyle('stamp')">Stamp</button>
 
-    </div>
+<button class="tog st-tog" data-v="monument" onclick="setStyle('monument')">Monument</button>
+</div>
 
-  </div>
+</div>
+
+<div class="panel">
+
+<div class="ptitle">Portrait Effect</div>
+
+<div class="tg">
+
+<button class="tog sk-tog" data-v="none"
+onclick="setSketch('none')">Photo</button>
+
+<button class="tog sk-tog on" data-v="woodcut"
+onclick="setSketch('woodcut')">Woodcut</button>
+
+<button class="tog sk-tog" data-v="etching"
+onclick="setSketch('etching')">Etching</button>
+
+<button class="tog sk-tog" data-v="pencil"
+onclick="setSketch('pencil')">Pencil</button>
+
+<button class="tog sk-tog" data-v="litho"
+onclick="setSketch('litho')">Lithograph</button>
+
+<button class="tog sk-tog" data-v="crosshatch"
+onclick="setSketch('crosshatch')">Crosshatch</button>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="ptitle">Card Background</div>
+
+<div class="tg">
+
+<button class="tog bg-tog on" data-v=""
+onclick="setBg('')">Parchment</button>
+
+<button class="tog bg-tog" data-v="#ffffff"
+onclick="setBg('#ffffff')">White</button>
+
+<button class="tog bg-tog" data-v="#f5f0e8"
+onclick="setBg('#f5f0e8')">Cream</button>
+
+<button class="tog bg-tog" data-v="#1a1a1a"
+onclick="setBg('#1a1a1a')">Black</button>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="ptitle">Saved Cards</div>
+
+<div class="sgrid" id="savedList"></div>
+
+<div class="brow">
+<button class="btn bg" onclick="saveCard()">Add Card</button>
+<button class="btn bd" onclick="clearCards()">Clear</button>
+</div>
+
+</div>
+
+</div>
+
+<div>
+
+<div class="panel">
+
+<div class="ptitle">Live Preview</div>
+
+<div id="previewWrap">
+<div id="preview"></div>
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
 <script>
-let dark = true;
-let cSketch = 'woodcut';
+
+let dark=true;
+
+let cStyle='broadside';
+let cSketch='woodcut';
+let cardBg='';
+
+let cards=[];
 
 function esc(s){
-  return String(s || '')
+  return String(s||'')
     .replace(/&/g,'&amp;')
     .replace(/</g,'&lt;')
     .replace(/>/g,'&gt;')
@@ -498,41 +619,62 @@ function esc(s){
 
 function toggleTheme(){
 
-  dark = !dark;
+  dark=!dark;
 
-  const root = document.getElementById('root');
+  const root=document.getElementById('root');
 
-  root.className = dark ? 'dk' : 'lt';
+  root.className=dark?'dk':'lt';
 
-  document.getElementById('ticon').textContent =
-    dark ? '☀️' : '🌙';
+  document.getElementById('themeIcon').textContent=
+    dark?'☀️':'🌙';
 
-  document.getElementById('tlabel').textContent =
-    dark ? 'Light' : 'Dark';
+  document.getElementById('themeText').textContent=
+    dark?'Light':'Dark';
+}
+
+function setStyle(v){
+
+  cStyle=v;
+
+  document.querySelectorAll('.st-tog').forEach(b=>{
+    b.classList.toggle('on',b.dataset.v===v);
+  });
+
+  updatePreview();
 }
 
 function setSketch(v){
 
-  cSketch = v;
+  cSketch=v;
 
-  document.querySelectorAll('.sk-tog').forEach(btn => {
-    btn.classList.toggle(
-      'on',
-      btn.dataset.v === v
-    );
+  document.querySelectorAll('.sk-tog').forEach(b=>{
+    b.classList.toggle('on',b.dataset.v===v);
+  });
+
+  updatePreview();
+}
+
+function setBg(v){
+
+  cardBg=v;
+
+  document.querySelectorAll('.bg-tog').forEach(b=>{
+    b.classList.toggle('on',b.dataset.v===v);
   });
 
   updatePreview();
 }
 
 function getVal(id){
-  const el = document.getElementById(id);
-  return el ? el.value : '';
+
+  const e=document.getElementById(id);
+
+  return e?e.value:'';
 }
 
 function getData(){
 
-  return {
+  return{
     name:getVal('nm'),
     dates:getVal('dt'),
     role:getVal('ro'),
@@ -540,87 +682,135 @@ function getData(){
     era:getVal('er'),
     quote:getVal('qu'),
     series:getVal('se'),
-    img:getVal('im')
+    img:getVal('im'),
+    style:cStyle,
+    sketch:cSketch,
+    bg:cardBg
   };
 }
 
 function buildCard(d){
 
-  const img = d.img
-    ? `
-      <img
-        src="${esc(d.img)}"
-        class="sk-${esc(cSketch)}"
-        onerror="this.style.display='none'">
-    `
-    : `
-      <div style="opacity:.35;">No Image</div>
-    `;
+  let cls='card ';
+
+  if(d.style==='broadside') cls+='sb';
+  else if(d.style==='propaganda') cls+='sp';
+  else if(d.style==='stamp') cls+='ss';
+  else cls+='sm';
 
   return `
-    <div class="card">
+  <div class="${cls}"
+    style="${d.bg ? '--card-bg:'+d.bg : ''};
+           width:320px;
+           height:420px;
+           box-shadow:0 8px 32px rgba(0,0,0,.45);">
 
-      <div class="ctb"></div>
+    <div class="ctb"></div>
 
-      <div class="ch">
-        <div class="cera">${esc(d.era)}</div>
-        <div class="cname">${esc(d.name)}</div>
-        <div class="cdates">${esc(d.dates)}</div>
-      </div>
+    <div class="ch">
+      <div class="cera">${esc(d.era)}</div>
+      <div class="cname">${esc(d.name)}</div>
+      <div class="cdates">${esc(d.dates)}</div>
+    </div>
 
-      <div class="cdiv">
-        <span class="corn">✦</span>
-      </div>
+    <div class="cdiv">
+      <span>✦</span>
+    </div>
 
-      <div class="cia">
-        ${img}
-      </div>
+    <div class="cia">
 
-      <div class="crole">
-        ${esc(d.role)}
-      </div>
-
-      <div class="cbody">
-        <div class="cquote">
-          ${esc(d.quote)}
-        </div>
-      </div>
-
-      <div class="cfoot">
-        <div class="cnat">${esc(d.nation)}</div>
-        <div class="cser">${esc(d.series)}</div>
-      </div>
-
-      <div class="cbb"></div>
+      ${
+        d.img
+        ? `<img
+            src="${esc(d.img)}"
+            class="sk-${esc(d.sketch)}"
+            onerror="this.style.display='none'">`
+        : ''
+      }
 
     </div>
+
+    <div class="crole">
+      ${esc(d.role)}
+    </div>
+
+    <div class="cbody">
+      <div class="cquote">
+        ${esc(d.quote)}
+      </div>
+    </div>
+
+    <div class="cfoot">
+      <div class="cnat">${esc(d.nation)}</div>
+      <div class="cser">${esc(d.series)}</div>
+    </div>
+
+    <div class="cbb"></div>
+
+  </div>
   `;
 }
 
 function updatePreview(){
 
-  const d = getData();
+  const d=getData();
 
-  const html = buildCard(d);
-
-  const pc = document.getElementById('pc');
-
-  pc.innerHTML = html;
-
-  const card = pc.querySelector('.card');
-
-  if(card){
-
-    card.style.width = '320px';
-    card.style.height = '420px';
-    card.style.boxShadow = '0 6px 32px rgba(0,0,0,.4)';
-  }
+  document.getElementById('preview').innerHTML=
+    buildCard(d);
 }
 
-toggleTheme();
-toggleTheme();
+function saveCard(){
+
+  const d=getData();
+
+  cards.push(d);
+
+  renderCards();
+}
+
+function renderCards(){
+
+  const wrap=document.getElementById('savedList');
+
+  if(!cards.length){
+
+    wrap.innerHTML='<div>No cards saved</div>';
+
+    return;
+  }
+
+  wrap.innerHTML=cards.map((c,i)=>`
+    <div class="sitem">
+
+      <div class="sname">
+        ${esc(c.name)}
+      </div>
+
+      <button class="sdel"
+        onclick="deleteCard(${i})">
+        ✕
+      </button>
+
+    </div>
+  `).join('');
+}
+
+function deleteCard(i){
+
+  cards.splice(i,1);
+
+  renderCards();
+}
+
+function clearCards(){
+
+  cards=[];
+
+  renderCards();
+}
 
 updatePreview();
+
 </script>
 
 </body>
