@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en" id="root">
 <head>
 <meta charset="UTF-8">
@@ -7,729 +6,675 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="NFC Cards">
+
 <title>NFC Cards</title>
+
 <style>
-:root {
-  --gold: #c8a020;
-  --gold-h: #e0b830;
-  --red: #8b1a1a;
-  --ink: #1a0f00;
-  --parchment: #f0e6c8;
-  --parchment-dark: #d9c99a;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-card: Georgia, "Times New Roman", serif;
+:root{
+  --gold:#c8a020;
+  --gold-h:#e0b830;
+  --red:#8b1a1a;
+  --ink:#1a0f00;
+  --parchment:#f0e6c8;
+  --parchment-dark:#d9c99a;
+
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-card:Georgia,"Times New Roman",serif;
 }
-.dk { --bg:#111; --bg2:#0a0a0a; --panel:#1c1c1e; --border:#2c2c2e; --border2:#3a3a3c; --text:#f2f2f7; --tmid:#aeaeb2; --tdim:#636366; --togbg:#0a0a0a; --togact:#2a1d00; --inbg:#0a0a0a; --incol:#f0e6c8; }
-.lt { --bg:#f2f2f7; --bg2:#fff; --panel:#fff; --border:#d1d1d6; --border2:#c7c7cc; --text:#1c1c1e; --tmid:#3a3a3c; --tdim:#8e8e93; --togbg:#f2f2f7; --togact:#fff8e8; --inbg:#fff; --incol:#1c1c1e; }
 
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;}
-body{background:var(–bg);color:var(–text);font-family:var(–font);font-size:15px;line-height:1.4;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;transition:background .2s,color .2s;}
+.dk{
+  --bg:#111;
+  --bg2:#0a0a0a;
+  --panel:#1c1c1e;
+  --border:#2c2c2e;
+  --border2:#3a3a3c;
+  --text:#f2f2f7;
+  --tmid:#aeaeb2;
+  --tdim:#636366;
+  --togbg:#0a0a0a;
+  --togact:#2a1d00;
+  --inbg:#0a0a0a;
+  --incol:#f0e6c8;
+}
 
-/* APP */
-.app{display:flex;flex-direction:column;min-height:100dvh;}
+.lt{
+  --bg:#f2f2f7;
+  --bg2:#fff;
+  --panel:#fff;
+  --border:#d1d1d6;
+  --border2:#c7c7cc;
+  --text:#1c1c1e;
+  --tmid:#3a3a3c;
+  --tdim:#8e8e93;
+  --togbg:#f2f2f7;
+  --togact:#fff8e8;
+  --inbg:#fff;
+  --incol:#1c1c1e;
+}
 
-/* TOPBAR */
-.topbar{background:var(–bg2);border-bottom:1px solid var(–border);padding:calc(var(–safe-top) + 10px) 16px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.topbar-left{}
-.topbar-title{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(–gold);}
-.topbar-sub{font-size:11px;color:var(–tdim);margin-top:1px;}
-.topbar-right{display:flex;align-items:center;gap:8px;}
-.theme-btn{background:var(–panel);border:1px solid var(–border);border-radius:20px;padding:5px 12px;font-size:13px;color:var(–tmid);cursor:pointer;font-family:var(–font);display:flex;align-items:center;gap:5px;white-space:nowrap;}
+*,*::before,*::after{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-/* TAB BAR */
-.tab-bar{display:flex;background:var(–bg2);border-bottom:1px solid var(–border);position:sticky;top:53px;z-index:99;}
-.tab-btn{flex:1;padding:8px 4px 7px;background:none;border:none;border-bottom:2px solid transparent;color:var(–tdim);font-family:var(–font);font-size:10px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.tab-icon{font-size:16px;line-height:1;}
-.tab-btn.on{color:var(–gold);border-bottom-color:var(–gold);}
+html,body{
+  height:100%;
+}
 
-/* CONTENT */
-.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(16px + var(–safe-bottom));}
-.tab-panel{display:none;padding:16px;}
-.tab-panel.on{display:block;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:15px;
+  line-height:1.4;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior:none;
+  transition:background .2s,color .2s;
+}
 
-/* PANEL */
-.panel{background:var(–panel);border:1px solid var(–border);border-radius:12px;padding:16px;margin-bottom:12px;}
-.ptitle{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(–gold);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(–border);display:flex;justify-content:space-between;align-items:center;}
+.app{
+  display:flex;
+  flex-direction:column;
+  min-height:100dvh;
+}
 
-/* FIELDS */
-.field{margin-bottom:12px;}
-.field:last-child{margin-bottom:0;}
-.field>label{display:block;font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(–tdim);margin-bottom:5px;}
-input[type=text],textarea{width:100%;background:var(–inbg);border:1px solid var(–border);color:var(–incol);font-family:var(–font);font-size:16px;padding:10px 12px;border-radius:8px;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .15s;}
-input[type=text]:focus,textarea:focus{border-color:var(–gold);}
-textarea{min-height:80px;resize:vertical;line-height:1.5;}
+.topbar{
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:calc(var(--safe-top) + 10px) 16px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
 
-/* TOGGLE GRID */
-.tg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.tg5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
-.tog{background:var(–togbg);border:1px solid var(–border);color:var(–tdim);font-family:var(–font);font-size:12px;font-weight:500;padding:10px 6px;cursor:pointer;border-radius:8px;text-align:center;line-height:1.3;-webkit-appearance:none;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .15s;}
-.tog small{display:block;font-size:10px;color:var(–tdim);opacity:.7;margin-top:2px;font-weight:400;}
-.tog.on{border-color:var(–gold);color:var(–gold);background:var(–togact);font-weight:600;}
-.tog.on small{color:var(–gold);}
+.topbar-title{
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
 
-/* BUTTONS */
-.brow{display:flex;gap:8px;margin-top:12px;}
-.btn{flex:1;padding:13px 10px;font-family:var(–font);font-size:14px;font-weight:600;border:none;cursor:pointer;border-radius:10px;min-height:48px;-webkit-appearance:none;transition:all .15s;}
-.bg{background:var(–gold);color:#1a0f00;}
-.bg:active{background:var(–gold-h);}
-.bo{background:transparent;border:1px solid var(–border2);color:var(–tmid);}
-.bo:active{border-color:var(–gold);color:var(–gold);}
-.bd{background:transparent;border:1px solid #4a2020;color:#aa5555;}
-.bd:active{border-color:var(–red);color:var(–red);}
+.topbar-sub{
+  font-size:11px;
+  color:var(--tdim);
+  margin-top:1px;
+}
 
-/* HINT */
-.hint{background:var(–bg);border:1px solid var(–border);border-radius:8px;padding:10px 12px;font-size:12px;color:var(–tdim);line-height:1.6;margin-top:10px;}
-.hint strong{color:var(–tmid);font-weight:600;}
+.topbar-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
 
-/* SAVED */
-.badge{font-size:12px;color:var(–tdim);font-weight:400;}
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;max-height:200px;overflow-y:auto;}
-.sitem{background:var(–bg);border:1px solid var(–border);border-radius:8px;padding:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;min-height:44px;}
-.sname{font-size:12px;font-weight:500;color:var(–text);}
-.sdel{background:none;border:none;color:var(–tdim);cursor:pointer;font-size:16px;padding:4px;min-width:28px;text-align:center;}
-.empty{font-size:13px;color:var(–tdim);text-align:center;padding:24px;grid-column:1/-1;}
+.theme-btn{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:5px 12px;
+  font-size:13px;
+  color:var(--tmid);
+  cursor:pointer;
+}
 
-/* PREVIEW */
-.pmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.plabel{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(–gold);}
-.psize{font-size:11px;color:var(–tdim);}
-#pc,#dpc{display:flex;justify-content:center;}
+.tab-bar{
+  display:flex;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+}
 
-/* ═══ CARD ═══ */
-.card{position:relative;overflow:hidden;background:var(–card-bg,var(–parchment));display:flex;flex-direction:column;font-family:var(–font-card);}
-.card.sb{background:var(–card-bg,#f5e8c0);border:3px double #7a6030;}
-.card.sp{background:var(–card-bg,#e8d5b0);border:4px solid var(–red);}
-.card.ss{background:var(–card-bg,#f0e8d0);border:2px solid #5a4020;}
-.card.sm{background:var(–card-bg,#e0d8c8);border:2px solid #666;}
-.ctb{height:14px;flex-shrink:0;background:repeating-linear-gradient(90deg,var(–ink) 0,var(–ink) 4px,transparent 4px,transparent 8px);opacity:.15;}
-.card.sp .ctb{background:var(–red);opacity:1;height:8px;}
-.ch{padding:.45rem .75rem .3rem;text-align:center;flex-shrink:0;}
-.cera{font-family:var(–font);font-size:.38rem;letter-spacing:.3em;text-transform:uppercase;color:var(–red);}
-.card.sm .cera{color:#555;}
-.cname{font-family:var(–font-card);font-weight:700;font-size:.95rem;line-height:1.15;color:var(–ink);}
-.card.sp .cname{font-weight:900;font-size:1.05rem;text-transform:uppercase;color:var(–red);}
-.cdates{font-style:italic;font-size:.42rem;color:#7a6030;margin-top:.06rem;}
-.cdiv{display:flex;align-items:center;gap:.3rem;padding:0 .75rem;margin:.15rem 0;flex-shrink:0;}
-.cdiv::before,.cdiv::after{content:’’;flex:1;height:1px;background:var(–ink);opacity:.3;}
-.corn{font-size:.5rem;color:#b8941f;opacity:.8;}
-.card.sp .cdiv::before,.card.sp .cdiv::after{background:var(–red);opacity:.6;}
-.cia{margin:0 .75rem .3rem;flex:1 1 auto;min-height:0;background:var(–parchment-dark);overflow:hidden;display:flex;align-items:center;justify-content:center;}
-.card.ss .cia{border:5px solid white;box-shadow:0 0 0 1px #ccc,inset 0 0 0 1px #ccc;}
-.card.sm .cia{border:2px solid #aaa;background:#d8d0c0;}
-.cia img{width:100%;height:100%;object-fit:cover;object-position:top center;}
-.cia img.sk-none{filter:sepia(.4) contrast(1.1);}
-.cia img.sk-woodcut{filter:grayscale(1) contrast(2.4) brightness(1.1) sepia(.15);mix-blend-mode:multiply;}
-.cia img.sk-etching{filter:grayscale(1) contrast(3) brightness(1.25);mix-blend-mode:multiply;}
-.cia img.sk-pencil{filter:grayscale(1) contrast(1.6) brightness(1.35);mix-blend-mode:multiply;opacity:.85;}
-.cia img.sk-litho{filter:grayscale(1) contrast(2.8) brightness(.95) sepia(.08);mix-blend-mode:multiply;}
-.cia img.sk-crosshatch{display:none;}
-.cia canvas{position:absolute;inset:0;width:100%;height:100%;}
-.cph{display:flex;flex-direction:column;align-items:center;gap:.3rem;opacity:.35;}
-.cph svg{width:36px;height:36px;}
-.cph span{font-family:var(–font);font-size:.38rem;letter-spacing:.15em;text-transform:uppercase;}
-.crole{padding:0 .75rem;text-align:center;font-style:italic;font-size:.44rem;color:#5a4020;line-height:1.3;flex-shrink:0;}
-.card.sp .crole{font-style:normal;font-weight:700;font-size:.42rem;letter-spacing:.06em;color:#333;}
-.cbody{padding:.3rem .75rem .25rem;display:flex;justify-content:space-between;align-items:flex-end;gap:.4rem;flex-shrink:0;}
-.cquote{font-style:italic;font-size:.44rem;line-height:1.5;color:#2a1800;border-left:2px solid #b8941f;padding-left:.4rem;flex:1;}
-.card.sb .cquote{font-size:.46rem;border-left:none;text-align:center;padding:.2rem .3rem;border-top:1px solid rgba(0,0,0,.2);border-bottom:1px solid rgba(0,0,0,.2);}
-.card.sp .cquote{font-style:normal;font-weight:700;font-size:.48rem;border-left:3px solid var(–red);color:#1a0000;}
-.cnfc{border:1px dashed rgba(0,0,0,.2);border-radius:50%;width:.55in;height:.55in;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.3);position:relative;flex-shrink:0;}
-.cnfc::after{content:‘NFC’;font-family:var(–font);font-size:.26rem;letter-spacing:.12em;color:rgba(0,0,0,.3);position:absolute;bottom:.1rem;}
-.nw{display:flex;gap:2px;align-items:flex-end;margin-bottom:.08rem;}
-.nb{width:2px;background:rgba(0,0,0,.2);border-radius:1px;}
-.cfoot{padding:.2rem .75rem .3rem;display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0;}
-.cnat{font-family:var(–font);font-size:.32rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,.35);}
-.cser{font-size:.32rem;letter-spacing:.08em;color:#b8941f;opacity:.75;}
-.cbb{height:10px;flex-shrink:0;background:repeating-linear-gradient(90deg,var(–ink) 0,var(–ink) 4px,transparent 4px,transparent 8px);opacity:.15;}
-.card.sp .cbb{background:var(–red);opacity:1;height:6px;}
-.card::before{content:’’;position:absolute;inset:0;pointer-events:none;z-index:10;opacity:.35;background-image:url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 200 200’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.85’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.04’/%3E%3C/svg%3E”);}
+.tab-btn{
+  flex:1;
+  padding:10px;
+  background:none;
+  border:none;
+  color:var(--tdim);
+  cursor:pointer;
+}
 
-/* DESKTOP */
+.tab-btn.on{
+  color:var(--gold);
+  border-bottom:2px solid var(--gold);
+}
+
+.content{
+  flex:1;
+  overflow-y:auto;
+  padding-bottom:calc(16px + var(--safe-bottom));
+}
+
+.tab-panel{
+  display:none;
+  padding:16px;
+}
+
+.tab-panel.on{
+  display:block;
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:12px;
+}
+
+.ptitle{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:14px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+
+.field{
+  margin-bottom:12px;
+}
+
+.field label{
+  display:block;
+  font-size:11px;
+  text-transform:uppercase;
+  color:var(--tdim);
+  margin-bottom:5px;
+}
+
+input[type=text],
+textarea{
+  width:100%;
+  background:var(--inbg);
+  border:1px solid var(--border);
+  color:var(--incol);
+  font-family:var(--font);
+  font-size:16px;
+  padding:10px 12px;
+  border-radius:8px;
+  outline:none;
+}
+
+textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
+input[type=text]:focus,
+textarea:focus{
+  border-color:var(--gold);
+}
+
+.tg{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.tog{
+  background:var(--togbg);
+  border:1px solid var(--border);
+  color:var(--tdim);
+  padding:10px 6px;
+  cursor:pointer;
+  border-radius:8px;
+  text-align:center;
+}
+
+.tog.on{
+  border-color:var(--gold);
+  color:var(--gold);
+  background:var(--togact);
+}
+
+.brow{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.btn{
+  flex:1;
+  padding:13px 10px;
+  border:none;
+  cursor:pointer;
+  border-radius:10px;
+  min-height:48px;
+}
+
+.bg{
+  background:var(--gold);
+  color:#1a0f00;
+}
+
+.bo{
+  background:transparent;
+  border:1px solid var(--border2);
+  color:var(--tmid);
+}
+
+.bd{
+  background:transparent;
+  border:1px solid #4a2020;
+  color:#aa5555;
+}
+
+.hint{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--tdim);
+  line-height:1.6;
+  margin-top:10px;
+}
+
+#pc,#dpc{
+  display:flex;
+  justify-content:center;
+}
+
+.card{
+  position:relative;
+  overflow:hidden;
+  background:var(--card-bg,var(--parchment));
+  display:flex;
+  flex-direction:column;
+  font-family:var(--font-card);
+}
+
+.card.sb{
+  background:var(--card-bg,#f5e8c0);
+  border:3px double #7a6030;
+}
+
+.card.sp{
+  background:var(--card-bg,#e8d5b0);
+  border:4px solid var(--red);
+}
+
+.card.ss{
+  background:var(--card-bg,#f0e8d0);
+  border:2px solid #5a4020;
+}
+
+.card.sm{
+  background:var(--card-bg,#e0d8c8);
+  border:2px solid #666;
+}
+
+.ch{
+  padding:.45rem .75rem .3rem;
+  text-align:center;
+}
+
+.cera{
+  font-size:.38rem;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:var(--red);
+}
+
+.cname{
+  font-weight:700;
+  font-size:.95rem;
+  line-height:1.15;
+  color:var(--ink);
+}
+
+.cdates{
+  font-style:italic;
+  font-size:.42rem;
+  color:#7a6030;
+  margin-top:.06rem;
+}
+
+.cia{
+  margin:0 .75rem .3rem;
+  flex:1 1 auto;
+  background:var(--parchment-dark);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.cia img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.crole{
+  padding:0 .75rem;
+  text-align:center;
+  font-style:italic;
+  font-size:.44rem;
+  color:#5a4020;
+}
+
+.cbody{
+  padding:.3rem .75rem .25rem;
+}
+
+.cquote{
+  font-style:italic;
+  font-size:.44rem;
+  line-height:1.5;
+  color:#2a1800;
+}
+
+.cfoot{
+  padding:.2rem .75rem .3rem;
+  display:flex;
+  justify-content:space-between;
+}
+
+.cnat{
+  font-size:.32rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:rgba(0,0,0,.35);
+}
+
+.cser{
+  font-size:.32rem;
+  color:#b8941f;
+}
+
+.card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.12;
+}
+
 @media(min-width:768px){
-.app{display:block;}
-.topbar{position:static;padding:16px 24px;}
-.topbar-title{font-size:18px;}
-.tab-bar,.content{display:none!important;}
-#desklay{display:grid!important;grid-template-columns:400px 1fr;gap:24px;padding:20px 24px 32px;max-width:1200px;margin:0 auto;}
-#dpb{display:block!important;}
-.dsticky{position:sticky;top:24px;align-self:start;}
-}
 
-/* PRINT */
-.psheet{display:none;}
-@media print{
-*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
-body{background:white;margin:0;padding:0;}
-.app{display:none!important;}
-.psheet{display:block!important;}
-.ppage{width:8.5in;height:11in;position:relative;page-break-after:always;overflow:hidden;background:white;}
-.lcell{position:absolute;overflow:hidden;}
-.lcell .card{width:100%!important;height:100%!important;box-shadow:none!important;margin:0!important;}
-.lcell .card::before{display:none;}
-.psheet.fr .lcell{border-radius:50%;}
-.psheet.fr .lcell .card{border-radius:50%;border:none!important;}
+  .app{
+    display:block;
+  }
+
+  .tab-bar,
+  .content{
+    display:none !important;
+  }
+
+  #desklay{
+    display:grid !important;
+    grid-template-columns:400px 1fr;
+    gap:24px;
+    padding:20px 24px 32px;
+    max-width:1200px;
+    margin:0 auto;
+  }
+
+  #dpb{
+    display:block !important;
+  }
 }
 </style>
-
 </head>
+
 <body>
 
-<script>
-// ── State — defined early so inline onclick= handlers can call functions ──
-// Functions are hoisted so they're available even though defined later in the bottom script
-var cards=[], cStyle='broadside', cSketch='woodcut', cFmt='3x4', dark=true, cardBg='';
-var _domReady=false;
+<div class="app">
 
-var FMTS={
-  '4x6' :{w:4,   h:6,  cols:2,rows:3,mT:.5, mL:.19,gX:.19,gY:0,   per:6, av:'Avery 8164', ht:'Large format — portrait pops. Walls, doors, boards.'},
-  '3x4' :{w:3.33,h:4,  cols:2,rows:3,mT:.5, mL:.19,gX:.19,gY:0,   per:6, av:'Avery 5164', ht:'Sweet spot — readable anywhere. 6 per sheet.'},
-  '2x4' :{w:4,   h:2,  cols:2,rows:5,mT:.5, mL:.19,gX:.19,gY:0,   per:10,av:'Avery 5163', ht:'Subtle, cheap — 10 per sheet. Good inside books.'},
-  'letter':{w:7.5,h:10,cols:1,rows:1,mT:.5, mL:.5, gX:0,  gY:0,   per:1, av:'Full page',  ht:'One poster-card per page. Full-page label stock.'},
-  'round':{w:3,  h:3,  cols:3,rows:3,mT:.69,mL:.75,gX:.63,gY:.25, per:9, av:'Avery 22807',ht:'Circular medallion. Unusual shape draws attention.'},
-  'card' :{w:3.5,h:5,  cols:2,rows:2,mT:.5, mL:.75,gX:.5, gY:.25, per:4, av:'Index card', ht:'Trading card size. Print on cardstock, cut apart.'}
-};
+<div class="topbar">
+  <div>
+    <div class="topbar-title">NFC Cards</div>
+    <div class="topbar-sub">Digital Graffiti Project</div>
+  </div>
+
+  <div class="topbar-right">
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="ticon">☀️</span>
+      <span id="tlabel">Light</span>
+    </button>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn on" onclick="goTab('edit')">Edit</button>
+  <button class="tab-btn" onclick="goTab('preview')">Preview</button>
+</div>
+
+<div class="content">
+
+<div class="tab-panel on" id="tp-edit">
+
+<div class="panel">
+
+<div class="ptitle">Card Details</div>
+
+<div class="field">
+<label>Full Name</label>
+<input type="text" id="mnm" value="Frederick Douglass" oninput="updatePreview()">
+</div>
+
+<div class="field">
+<label>Birth – Death Years</label>
+<input type="text" id="mdt" value="1818 – 1895" oninput="updatePreview()">
+</div>
+
+<div class="field">
+<label>Role</label>
+<input type="text" id="mro" value="Abolitionist · Author · Statesman" oninput="updatePreview()">
+</div>
+
+<div class="field">
+<label>Nationality</label>
+<input type="text" id="mna" value="American" oninput="updatePreview()">
+</div>
+
+<div class="field">
+<label>Era</label>
+<input type="text" id="mer" value="Antebellum America" oninput="updatePreview()">
+</div>
+
+<div class="field">
+<label>Quote</label>
+<textarea id="mqu" oninput="updatePreview()">Once you learn to read, you will be forever free.</textarea>
+</div>
+
+<div class="field">
+<label>Series</label>
+<input type="text" id="mse" value="Voices of Dissent · Vol. I" oninput="updatePreview()">
+</div>
+
+<div class="field">
+<label>Portrait URL</label>
+<input type="text"
+id="mim"
+value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg"
+oninput="updatePreview()">
+</div>
+
+</div>
+
+<div class="brow">
+<button class="btn bg" onclick="saveCard()">Add To Sheet</button>
+<button class="btn bo" onclick="goTab('preview')">Preview</button>
+</div>
+
+</div>
+
+<div class="tab-panel" id="tp-preview">
+
+<div class="panel">
+<div id="pc"></div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+let cards = [];
+
+let cStyle = 'broadside';
+let dark = true;
+let cardBg = '';
+
+function esc(s){
+  return String(s || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 
 function setTheme(d){
-  dark=d;
-  var r=document.getElementById('root');
-  if(!r) return; // DOM not ready yet, called again on init
-  r.className=dark?'dk':'lt';
-  var ti=document.getElementById('ticon');
-  var tl=document.getElementById('tlabel');
-  if(ti) ti.textContent=dark?'☀️':'🌙';
-  if(tl) tl.textContent=dark?'Light':'Dark';
+
+  dark = d;
+
+  const root = document.getElementById('root');
+
+  root.className = dark ? 'dk' : 'lt';
+
+  document.getElementById('ticon').textContent =
+    dark ? '☀️' : '🌙';
+
+  document.getElementById('tlabel').textContent =
+    dark ? 'Light' : 'Dark';
 }
 
-function toggleTheme(){setTheme(!dark);}
-
-function setSketch(v){
-  cSketch=v;
-  document.querySelectorAll('.sk-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});
-  updatePreview();
-}
-function setStyle(v){
-  cStyle=v;
-  document.querySelectorAll('.st-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});
-  updatePreview();
-}
-function setFmt(v){
-  cFmt=v;
-  document.querySelectorAll('.fm-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});
-  buildPrintSheet();
-  updatePreview();
-}
-
-function setBg(v){
-  cardBg=v;
-  document.querySelectorAll('.bg-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});
-  updatePreview();
-}
-
-/* ── Crosshatch canvas renderer ── */
-function drawCrosshatch(img, canvas){
-  var W=canvas.width, H=canvas.height;
-  var ctx=canvas.getContext('2d');
-  // Draw source image into offscreen canvas to read pixels
-  var off=document.createElement('canvas');
-  off.width=W; off.height=H;
-  var octx=off.getContext('2d');
-  octx.drawImage(img,0,0,W,H);
-  var data=octx.getImageData(0,0,W,H).data;
-
-  // White background
-  ctx.fillStyle='#ffffff';
-  ctx.fillRect(0,0,W,H);
-
-  // Draw crosshatch lines based on pixel darkness
-  var spacing=4; // line spacing in px
-  ctx.strokeStyle='#111111';
-  ctx.lineWidth=0.8;
-  ctx.lineCap='round';
-
-  // Helper: get darkness 0-1 at pixel x,y
-  function dark(x,y){
-    x=Math.max(0,Math.min(W-1,Math.round(x)));
-    y=Math.max(0,Math.min(H-1,Math.round(y)));
-    var i=(y*W+x)*4;
-    var r=data[i],g=data[i+1],b=data[i+2];
-    return 1-(0.299*r+0.587*g+0.114*b)/255;
-  }
-
-  // Layer 1: diagonal lines \ (45 deg) — draw when darkness > 0.2
-  ctx.beginPath();
-  for(var d=-(H);d<W+H;d+=spacing){
-    var x0=d,y0=0,x1=d+H,y1=H;
-    // Sample darkness along the line
-    var steps=Math.max(W,H)/spacing|0;
-    var drawing=false;
-    for(var s=0;s<=steps;s++){
-      var t=s/steps;
-      var px=x0+(x1-x0)*t, py=y0+(y1-y0)*t;
-      var dk=dark(px,py);
-      if(dk>0.22){
-        if(!drawing){ctx.moveTo(px,py);drawing=true;}
-        else ctx.lineTo(px,py);
-      } else {
-        drawing=false;
-      }
-    }
-  }
-  ctx.stroke();
-
-  // Layer 2: opposite diagonal / (135 deg) — draw when darkness > 0.45
-  ctx.beginPath();
-  ctx.lineWidth=0.7;
-  for(var d2=-(H);d2<W+H;d2+=spacing){
-    var x0b=d2+H,y0b=0,x1b=d2,y1b=H;
-    var steps2=Math.max(W,H)/spacing|0;
-    var drawing2=false;
-    for(var s2=0;s2<=steps2;s2++){
-      var t2=s2/steps2;
-      var px2=x0b+(x1b-x0b)*t2, py2=y0b+(y1b-y0b)*t2;
-      var dk2=dark(px2,py2);
-      if(dk2>0.45){
-        if(!drawing2){ctx.moveTo(px2,py2);drawing2=true;}
-        else ctx.lineTo(px2,py2);
-      } else {
-        drawing2=false;
-      }
-    }
-  }
-  ctx.stroke();
-
-  // Layer 3: horizontal lines — draw when darkness > 0.68 (deep shadows)
-  ctx.beginPath();
-  ctx.lineWidth=0.6;
-  for(var y=0;y<H;y+=spacing){
-    var drawing3=false;
-    for(var x=0;x<W;x+=2){
-      var dk3=dark(x,y);
-      if(dk3>0.68){
-        if(!drawing3){ctx.moveTo(x,y);drawing3=true;}
-        else ctx.lineTo(x,y);
-      } else {
-        drawing3=false;
-      }
-    }
-  }
-  ctx.stroke();
-}
-
-function applyCanvasSketch(container){
-  // Only for crosshatch — find img and draw to canvas
-  var img=container.querySelector('img.sk-crosshatch');
-  if(!img) return;
-  var existing=container.querySelector('canvas');
-  if(existing) existing.remove();
-  var canvas=document.createElement('canvas');
-  canvas.width=300; canvas.height=360;
-  container.style.position='relative';
-  container.appendChild(canvas);
-  if(img.complete && img.naturalWidth>0){
-    drawCrosshatch(img,canvas);
-  } else {
-    img.onload=function(){drawCrosshatch(img,canvas);};
-  }
+function toggleTheme(){
+  setTheme(!dark);
 }
 
 function goTab(id){
-  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('on');});
-  var p=document.getElementById('tp-'+id); if(p) p.classList.add('on');
-  var b=document.querySelector('.tab-btn[data-t="'+id+'"]'); if(b) b.classList.add('on');
+
+  document.querySelectorAll('.tab-panel')
+    .forEach(p => p.classList.remove('on'));
+
+  document.querySelectorAll('.tab-btn')
+    .forEach(b => b.classList.remove('on'));
+
+  document.getElementById('tp-' + id)
+    .classList.add('on');
+
+  event.target.classList.add('on');
+}
+
+function getVal(id){
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function getData(){
+
+  return{
+    name:getVal('mnm'),
+    dates:getVal('mdt'),
+    role:getVal('mro'),
+    nation:getVal('mna'),
+    era:getVal('mer'),
+    quote:getVal('mqu'),
+    series:getVal('mse'),
+    img:getVal('mim')
+  };
 }
 
 function buildCard(d){
-  var sc='card ';
-  if(d.style==='broadside')  sc+='sb';
-  else if(d.style==='propaganda') sc+='sp';
-  else if(d.style==='stamp') sc+='ss';
-  else sc+='sm';
-  var sk='sk-'+(d.sketch||'woodcut');
-  var img=d.img
-    ?'<img src="'+d.img+'" class="'+sk+'" onerror="this.style.display=\'none\'">'
-    :'<div class="cph"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="8" width="48" height="48" rx="2"/><circle cx="32" cy="26" r="10"/><path d="M8 56 Q32 38 56 56"/></svg><span>Portrait</span></div>';
-  var bgStyle=d.bg?'style="--card-bg:'+d.bg+'"':'';
-  return '<div class="'+sc+'" '+bgStyle+'>'
-    +'<div class="ctb"></div>'
-    +'<div class="ch"><div class="cera">'+(d.era||'')+'</div>'
-    +'<div class="cname">'+(d.name||'Unknown')+'</div>'
-    +'<div class="cdates">'+(d.dates||'')+'</div></div>'
-    +'<div class="cdiv"><span class="corn">✦</span></div>'
-    +'<div class="cia">'+img+'</div>'
-    +'<div class="crole">'+(d.role||'')+'</div>'
-    +'<div class="cbody"><div class="cquote">'+(d.quote||'')+'</div>'
-    +'<div class="cnfc"><div class="nw"><div class="nb" style="height:5px"></div><div class="nb" style="height:8px"></div><div class="nb" style="height:11px"></div><div class="nb" style="height:8px"></div><div class="nb" style="height:5px"></div></div></div>'
-    +'</div>'
-    +'<div class="cfoot"><div class="cnat">'+(d.nation||'')+'</div><div class="cser">'+(d.series||'')+'</div></div>'
-    +'<div class="cbb"></div>'
-    +'</div>';
-}
 
-function getVal(id){var e=document.getElementById(id);return e?e.value:'';}
+  return `
+    <div class="card sb">
 
-function getData(){
-  var desktop=window.innerWidth>=768;
-  var p=desktop?'d':'m';
-  return{name:getVal(p+'nm'),dates:getVal(p+'dt'),role:getVal(p+'ro'),
-    nation:getVal(p+'na'),era:getVal(p+'er'),quote:getVal(p+'qu'),
-    url:getVal(p+'ur'),series:getVal(p+'se'),img:getVal(p+'im'),
-    style:cStyle,sketch:cSketch,fmt:cFmt,bg:cardBg};
+      <div class="ch">
+        <div class="cera">${esc(d.era)}</div>
+
+        <div class="cname">
+          ${esc(d.name)}
+        </div>
+
+        <div class="cdates">
+          ${esc(d.dates)}
+        </div>
+      </div>
+
+      <div class="cia">
+        ${
+          d.img
+          ? `<img src="${esc(d.img)}">`
+          : ''
+        }
+      </div>
+
+      <div class="crole">
+        ${esc(d.role)}
+      </div>
+
+      <div class="cbody">
+        <div class="cquote">
+          "${esc(d.quote)}"
+        </div>
+      </div>
+
+      <div class="cfoot">
+        <div class="cnat">
+          ${esc(d.nation)}
+        </div>
+
+        <div class="cser">
+          ${esc(d.series)}
+        </div>
+      </div>
+
+    </div>
+  `;
 }
 
 function updatePreview(){
-  var fmt=FMTS[cFmt];
-  var desktop=window.innerWidth>=768;
-  var maxW=desktop?420:window.innerWidth-48;
-  var scale=Math.min(1,maxW/(fmt.w*96));
-  var pw=Math.round(fmt.w*96*scale);
-  var ph=Math.round(fmt.h*96*scale);
-  var html=buildCard(getData());
-  var badge=fmt.w+'\u2033 \u00d7 '+fmt.h+'\u2033 \u00b7 '+fmt.av;
-  var hint='<strong>'+fmt.av+'</strong> \u2014 '+fmt.ht+' <strong>'+fmt.per+' per sheet.</strong>';
-  ['pc','dpc'].forEach(function(wid){
-    var w=document.getElementById(wid); if(!w) return;
-    w.innerHTML=html;
-    var c=w.querySelector('.card');
-    if(c){
-      c.style.width=pw+'px';c.style.height=ph+'px';
-      c.style.boxShadow='0 6px 32px rgba(0,0,0,.5)';c.style.margin='0 auto';
-      if(d.bg) c.style.setProperty('--card-bg',d.bg);
-      // trigger crosshatch canvas after DOM is painted
-      if(cSketch==='crosshatch'){
-        var cia=c.querySelector('.cia');
-        if(cia) setTimeout(function(){applyCanvasSketch(cia);},50);
-      }
-    }
-  });
-  ['psz','dpsz'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=badge;});
-  ['lhint','dlhint'].forEach(function(id){var e=document.getElementById(id);if(e)e.innerHTML=hint;});
-}
 
-function buildPrintSheet(){
-  var fmt=FMTS[cFmt];
-  var sheet=document.getElementById('psh');
-  sheet.className='psheet'+(cFmt==='round'?' fr':'');
-  if(!cards.length){sheet.innerHTML='';return;}
-  var pages=Math.ceil(cards.length/fmt.per);
-  var html='';
-  for(var p=0;p<pages;p++){
-    var batch=cards.slice(p*fmt.per,(p+1)*fmt.per);
-    var cells='';
-    for(var i=0;i<batch.length;i++){
-      var col=i%fmt.cols,row=Math.floor(i/fmt.cols);
-      var left=fmt.mL+col*(fmt.w+fmt.gX);
-      var top=fmt.mT+row*(fmt.h+fmt.gY);
-      cells+='<div class="lcell" style="left:'+left+'in;top:'+top+'in;width:'+fmt.w+'in;height:'+fmt.h+'in;">'+buildCard(batch[i])+'</div>';
-      if(batch[i].bg){
-        // bg applied via inline style after insert — handled in buildCard
-      }
+  const data = getData();
+
+  const w = document.getElementById('pc');
+
+  w.innerHTML = buildCard(data);
+
+  const c = w.querySelector('.card');
+
+  if(c){
+
+    c.style.width = '320px';
+    c.style.height = '420px';
+
+    c.style.boxShadow =
+      '0 6px 32px rgba(0,0,0,.5)';
+
+    c.style.margin = '0 auto';
+
+    if(cardBg){
+      c.style.setProperty('--card-bg',cardBg);
     }
-    html+='<div class="ppage">'+cells+'</div>';
   }
-  sheet.innerHTML=html;
 }
 
 function saveCard(){
-  var d=getData();if(!d.name)return;
-  cards.push(d);renderList();buildPrintSheet();
-  if(window.innerWidth<768) goTab('sheet');
-}
-function delCard(i){cards.splice(i,1);renderList();buildPrintSheet();}
-function clearAll(){cards=[];renderList();buildPrintSheet();}
 
-function loadCard(i){
-  var d=cards[i];
-  var desktop=window.innerWidth>=768;
-  var p=desktop?'d':'m';
-  var map={name:'nm',dates:'dt',role:'ro',nation:'na',era:'er',quote:'qu',url:'ur',series:'se',img:'im'};
-  Object.keys(map).forEach(function(k){var e=document.getElementById(p+map[k]);if(e)e.value=d[k]||'';});
-  cStyle=d.style;cSketch=d.sketch||'woodcut';cFmt=d.fmt||'3x4';
-  document.querySelectorAll('.sk-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===cSketch);});
-  document.querySelectorAll('.st-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===cStyle);});
-  document.querySelectorAll('.fm-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===cFmt);});
-  updatePreview();
-  if(window.innerWidth<768) goTab('edit');
+  const d = getData();
+
+  cards.push(d);
+
+  alert('Card added to sheet.');
 }
 
-function renderList(){
-  var count='('+cards.length+' card'+(cards.length!==1?'s':'')+')';
-  ['cc','dcc'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=count;});
-  var inner=cards.length
-    ?cards.map(function(c,i){return'<div class="sitem" onclick="loadCard('+i+')"><span class="sname">'+c.name+'</span><button class="sdel" onclick="event.stopPropagation();delCard('+i+')">&#x2715;</button></div>';}).join('')
-    :'<div class="empty">No cards added yet</div>';
-  ['sl','dsl'].forEach(function(id){var e=document.getElementById(id);if(e)e.innerHTML=inner;});
-}
-
-function syncInputs(){
-  var desktop=window.innerWidth>=768;
-  var map={name:'nm',dates:'dt',role:'ro',nation:'na',era:'er',quote:'qu',url:'ur',series:'se',img:'im'};
-  if(desktop){
-    Object.keys(map).forEach(function(k){var m=document.getElementById('m'+map[k]),d=document.getElementById('d'+map[k]);if(m&&d)d.value=m.value;});
-  } else {
-    Object.keys(map).forEach(function(k){var m=document.getElementById('m'+map[k]),d=document.getElementById('d'+map[k]);if(m&&d)m.value=d.value;});
-  }
-}
-</script>
-
-<div class="app" id="app">
-
-  <!-- TOPBAR -->
-
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-title">NFC Cards</div>
-      <div class="topbar-sub">Digital Graffiti Project</div>
-    </div>
-    <div class="topbar-right">
-      <button class="theme-btn" onclick="toggleTheme()">
-        <span id="ticon">☀️</span><span id="tlabel">Light</span>
-      </button>
-      <button class="btn bo" id="dpb" style="display:none;flex:0;min-width:90px;padding:8px 14px;font-size:13px;" onclick="window.print()">⎙ Print</button>
-    </div>
-  </div>
-
-  <!-- TAB BAR -->
-
-  <div class="tab-bar">
-    <button class="tab-btn on" data-t="edit" onclick="goTab('edit')"><span class="tab-icon">✏️</span>Edit</button>
-    <button class="tab-btn" data-t="style" onclick="goTab('style')"><span class="tab-icon">🎨</span>Style</button>
-    <button class="tab-btn" data-t="format" onclick="goTab('format')"><span class="tab-icon">🏷️</span>Format</button>
-    <button class="tab-btn" data-t="preview" onclick="goTab('preview')"><span class="tab-icon">👁️</span>Preview</button>
-    <button class="tab-btn" data-t="sheet" onclick="goTab('sheet')"><span class="tab-icon">📋</span>Sheet</button>
-  </div>
-
-  <!-- MOBILE CONTENT -->
-
-  <div class="content" id="mcontent">
-
-```
-<!-- EDIT TAB -->
-<div class="tab-panel on" id="tp-edit">
-  <div class="panel">
-    <div class="ptitle">Card Details</div>
-    <div class="field"><label>Full Name</label><input type="text" id="mnm" placeholder="Frederick Douglass" value="Frederick Douglass" oninput="updatePreview()"></div>
-    <div class="field"><label>Birth – Death Years</label><input type="text" id="mdt" placeholder="1818 – 1895" value="1818 – 1895" oninput="updatePreview()"></div>
-    <div class="field"><label>Title / Role</label><input type="text" id="mro" placeholder="Abolitionist · Author · Statesman" value="Abolitionist · Author · Statesman" oninput="updatePreview()"></div>
-    <div class="field"><label>Nationality / Origin</label><input type="text" id="mna" placeholder="American" value="American" oninput="updatePreview()"></div>
-    <div class="field"><label>Era / Period</label><input type="text" id="mer" placeholder="Antebellum America" value="Antebellum America" oninput="updatePreview()"></div>
-    <div class="field"><label>Quote / Excerpt</label><textarea id="mqu" oninput="updatePreview()">"Once you learn to read, you will be forever free."</textarea></div>
-    <div class="field"><label>NFC URL</label><input type="text" id="mur" placeholder="https://..." oninput="updatePreview()"></div>
-    <div class="field"><label>Series Name</label><input type="text" id="mse" placeholder="Voices of Dissent · Vol. I" value="Voices of Dissent · Vol. I" oninput="updatePreview()"></div>
-    <div class="field"><label>Portrait Image URL</label><input type="text" id="mim" value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg" oninput="updatePreview()"></div>
-  </div>
-  <div class="brow">
-    <button class="btn bg" onclick="saveCard()">＋ Add to Sheet</button>
-    <button class="btn bo" onclick="goTab('preview')">Preview →</button>
-  </div>
-</div>
-
-<!-- STYLE TAB -->
-<div class="tab-panel" id="tp-style">
-  <div class="panel">
-    <div class="ptitle">Card Background</div>
-    <div class="tg">
-      <button class="tog bg-tog on" data-v="" onclick="setBg('')">Parchment<small>Default</small></button>
-      <button class="tog bg-tog" data-v="#ffffff" onclick="setBg('#ffffff')">White<small>Save ink</small></button>
-      <button class="tog bg-tog" data-v="#f5f0e8" onclick="setBg('#f5f0e8')">Cream<small>Soft</small></button>
-      <button class="tog bg-tog" data-v="#1a1a1a" onclick="setBg('#1a1a1a')">Black<small>Bold</small></button>
-    </div>
-  </div>
-  <div class="panel">
-    <div class="ptitle">Portrait Effect</div>
-    <div class="tg">
-      <button class="tog sk-tog" data-v="none" onclick="setSketch('none')">Photo</button>
-      <button class="tog sk-tog on" data-v="woodcut" onclick="setSketch('woodcut')">Woodcut</button>
-      <button class="tog sk-tog" data-v="etching" onclick="setSketch('etching')">Etching</button>
-      <button class="tog sk-tog" data-v="pencil" onclick="setSketch('pencil')">Pencil</button>
-      <button class="tog sk-tog" data-v="litho" onclick="setSketch('litho')">Litho</button>
-      <button class="tog sk-tog" data-v="crosshatch" onclick="setSketch('crosshatch')">✏️ Crosshatch<small>Ink sketch</small></button>
-    </div>
-  </div>
-  <div class="panel">
-    <div class="ptitle">Card Style</div>
-    <div class="tg">
-      <button class="tog st-tog on" data-v="broadside" onclick="setStyle('broadside')">Broadside</button>
-      <button class="tog st-tog" data-v="propaganda" onclick="setStyle('propaganda')">Propaganda</button>
-      <button class="tog st-tog" data-v="stamp" onclick="setStyle('stamp')">Postage Stamp</button>
-      <button class="tog st-tog" data-v="monument" onclick="setStyle('monument')">Monument</button>
-    </div>
-  </div>
-  <div class="brow">
-    <button class="btn bg" onclick="saveCard()">＋ Add to Sheet</button>
-    <button class="btn bo" onclick="goTab('preview')">Preview →</button>
-  </div>
-</div>
-
-<!-- FORMAT TAB -->
-<div class="tab-panel" id="tp-format">
-  <div class="panel">
-    <div class="ptitle">Label Format</div>
-    <div class="tg">
-      <button class="tog fm-tog" data-v="4x6" onclick="setFmt('4x6')">4″ × 6″<small>Avery 8164 · 2-up</small></button>
-      <button class="tog fm-tog on" data-v="3x4" onclick="setFmt('3x4')">3.33″ × 4″<small>Avery 5164 · 6-up</small></button>
-      <button class="tog fm-tog" data-v="2x4" onclick="setFmt('2x4')">2″ × 4″<small>Avery 5163 · 10-up</small></button>
-      <button class="tog fm-tog" data-v="letter" onclick="setFmt('letter')">Full Page<small>8.5″ × 11″ · 1-up</small></button>
-      <button class="tog fm-tog" data-v="round" onclick="setFmt('round')">3″ Round<small>Avery 22807 · 6-up</small></button>
-      <button class="tog fm-tog" data-v="card" onclick="setFmt('card')">3.5″ × 5″<small>Index card · 4-up</small></button>
-    </div>
-    <div class="hint" id="lhint"></div>
-  </div>
-  <div class="brow"><button class="btn bg" onclick="saveCard()">＋ Add to Sheet</button></div>
-</div>
-
-<!-- PREVIEW TAB -->
-<div class="tab-panel" id="tp-preview">
-  <div class="panel">
-    <div class="pmeta"><div class="plabel">Live Preview</div><div class="psize" id="psz"></div></div>
-    <div id="pc"></div>
-  </div>
-  <div class="brow">
-    <button class="btn bg" onclick="saveCard()">＋ Add to Sheet</button>
-    <button class="btn bo" onclick="goTab('sheet')">Sheet →</button>
-  </div>
-</div>
-
-<!-- SHEET TAB -->
-<div class="tab-panel" id="tp-sheet">
-  <div class="panel">
-    <div class="ptitle">Print Sheet <span class="badge" id="cc">(0 cards)</span></div>
-    <div class="sgrid" id="sl"><div class="empty">No cards added yet</div></div>
-    <div class="brow" style="margin-top:12px;">
-      <button class="btn bo" onclick="window.print()">⎙ Print Sheet</button>
-      <button class="btn bd" onclick="clearAll()">✕ Clear</button>
-    </div>
-  </div>
-  <div class="hint">
-    <strong>iPhone tip:</strong> Tap Share → Print to AirPrint. For exact label alignment use desktop Safari at 100% scale.
-  </div>
-</div>
-```
-
-  </div><!-- /content -->
-
-  <!-- DESKTOP LAYOUT -->
-
-  <div id="desklay" style="display:none;">
-    <div>
-      <div class="panel">
-        <div class="ptitle">Card Details</div>
-        <div class="field"><label>Full Name</label><input type="text" id="dnm" placeholder="Frederick Douglass" value="Frederick Douglass" oninput="updatePreview()"></div>
-        <div class="field"><label>Birth – Death Years</label><input type="text" id="ddt" placeholder="1818 – 1895" value="1818 – 1895" oninput="updatePreview()"></div>
-        <div class="field"><label>Title / Role</label><input type="text" id="dro" placeholder="Abolitionist · Author · Statesman" value="Abolitionist · Author · Statesman" oninput="updatePreview()"></div>
-        <div class="field"><label>Nationality / Origin</label><input type="text" id="dna" placeholder="American" value="American" oninput="updatePreview()"></div>
-        <div class="field"><label>Era / Period</label><input type="text" id="der" placeholder="Antebellum America" value="Antebellum America" oninput="updatePreview()"></div>
-        <div class="field"><label>Quote / Excerpt</label><textarea id="dqu" oninput="updatePreview()">"Once you learn to read, you will be forever free."</textarea></div>
-        <div class="field"><label>NFC URL</label><input type="text" id="dur" placeholder="https://..." oninput="updatePreview()"></div>
-        <div class="field"><label>Series Name</label><input type="text" id="dse" placeholder="Voices of Dissent · Vol. I" value="Voices of Dissent · Vol. I" oninput="updatePreview()"></div>
-        <div class="field"><label>Portrait Image URL</label><input type="text" id="dim" value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg" oninput="updatePreview()"></div>
-      </div>
-      <div class="panel" style="margin-top:12px;">
-        <div class="ptitle">Card Background</div>
-        <div class="tg">
-          <button class="tog bg-tog on" data-v="" onclick="setBg('')">Parchment<small>Default</small></button>
-          <button class="tog bg-tog" data-v="#ffffff" onclick="setBg('#ffffff')">White<small>Save ink</small></button>
-          <button class="tog bg-tog" data-v="#f5f0e8" onclick="setBg('#f5f0e8')">Cream<small>Soft</small></button>
-          <button class="tog bg-tog" data-v="#1a1a1a" onclick="setBg('#1a1a1a')">Black<small>Bold</small></button>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:12px;">
-        <div class="ptitle">Portrait Effect</div>
-        <div class="tg">
-          <button class="tog sk-tog" data-v="none" onclick="setSketch('none')">Photo</button>
-          <button class="tog sk-tog on" data-v="woodcut" onclick="setSketch('woodcut')">Woodcut</button>
-          <button class="tog sk-tog" data-v="etching" onclick="setSketch('etching')">Etching</button>
-          <button class="tog sk-tog" data-v="pencil" onclick="setSketch('pencil')">Pencil</button>
-          <button class="tog sk-tog" data-v="litho" onclick="setSketch('litho')">Litho</button>
-          <button class="tog sk-tog" data-v="crosshatch" onclick="setSketch('crosshatch')">✏️ Crosshatch<small>Ink sketch</small></button>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:12px;">
-        <div class="ptitle">Card Style</div>
-        <div class="tg">
-          <button class="tog st-tog on" data-v="broadside" onclick="setStyle('broadside')">Broadside</button>
-          <button class="tog st-tog" data-v="propaganda" onclick="setStyle('propaganda')">Propaganda</button>
-          <button class="tog st-tog" data-v="stamp" onclick="setStyle('stamp')">Postage Stamp</button>
-          <button class="tog st-tog" data-v="monument" onclick="setStyle('monument')">Monument</button>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:12px;">
-        <div class="ptitle">Label Format</div>
-        <div class="tg">
-          <button class="tog fm-tog" data-v="4x6" onclick="setFmt('4x6')">4″ × 6″<small>Avery 8164 · 2-up</small></button>
-          <button class="tog fm-tog on" data-v="3x4" onclick="setFmt('3x4')">3.33″ × 4″<small>Avery 5164 · 6-up</small></button>
-          <button class="tog fm-tog" data-v="2x4" onclick="setFmt('2x4')">2″ × 4″<small>Avery 5163 · 10-up</small></button>
-          <button class="tog fm-tog" data-v="letter" onclick="setFmt('letter')">Full Page<small>8.5″ × 11″ · 1-up</small></button>
-          <button class="tog fm-tog" data-v="round" onclick="setFmt('round')">3″ Round<small>Avery 22807 · 6-up</small></button>
-          <button class="tog fm-tog" data-v="card" onclick="setFmt('card')">3.5″ × 5″<small>Index card · 4-up</small></button>
-        </div>
-        <div class="hint" id="dlhint"></div>
-      </div>
-      <div class="brow" style="margin-top:12px;"><button class="btn bg" onclick="saveCard()">＋ Add to Sheet</button></div>
-      <div class="panel" style="margin-top:12px;">
-        <div class="ptitle">Print Sheet <span class="badge" id="dcc">(0 cards)</span></div>
-        <div class="sgrid" id="dsl"><div class="empty">No cards added yet</div></div>
-        <div class="brow" style="margin-top:12px;"><button class="btn bd" onclick="clearAll()">✕ Clear All</button></div>
-      </div>
-    </div>
-    <div class="dsticky">
-      <div class="panel">
-        <div class="pmeta"><div class="plabel">Live Preview</div><div class="psize" id="dpsz"></div></div>
-        <div id="dpc"></div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /app -->
-
-<div class="psheet" id="psh"></div>
-
-<script>
-// Init — runs after all HTML is parsed
 setTheme(true);
 updatePreview();
-
-// Resize handler for desktop switch
-window.addEventListener('resize', function(){
-  var desktop=window.innerWidth>=768;
-  var mc=document.getElementById('mcontent');
-  var dl=document.getElementById('desklay');
-  var tb=document.querySelector('.tab-bar');
-  var pb=document.getElementById('dpb');
-  if(desktop){
-    syncInputs();
-    mc.style.display='none';
-    tb.style.display='none';
-    dl.style.display='grid';
-    pb.style.display='block';
-  } else {
-    syncInputs();
-    mc.style.display='';
-    tb.style.display='';
-    dl.style.display='none';
-    pb.style.display='none';
-  }
-  updatePreview();
-});
-
-// Fire once on load to set correct layout
-(function(){
-  var desktop=window.innerWidth>=768;
-  var mc=document.getElementById('mcontent');
-  var dl=document.getElementById('desklay');
-  var tb=document.querySelector('.tab-bar');
-  var pb=document.getElementById('dpb');
-  if(desktop){
-    mc.style.display='none';
-    tb.style.display='none';
-    dl.style.display='grid';
-    pb.style.display='block';
-  }
-  updatePreview();
-})();
 </script>
 
 </body>
