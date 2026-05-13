@@ -158,6 +158,21 @@ textarea{min-height:80px;resize:vertical;line-height:1.5;}
 .dsticky{position:sticky;top:24px;align-self:start;}
 }
 
+/* IMAGE UPLOAD */
+.img-row{display:flex;gap:8px;align-items:stretch;}
+.img-row input[type=text]{flex:1;}
+.upload-btn{flex-shrink:0;background:var(–togbg);border:1px solid var(–border);color:var(–tmid);font-family:var(–font);font-size:12px;font-weight:500;padding:0 12px;border-radius:8px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;min-height:44px;-webkit-appearance:none;transition:all .15s;}
+.upload-btn:active{border-color:var(–gold);color:var(–gold);}
+.upload-btn input[type=file]{display:none;}
+.img-thumb{width:100%;height:60px;object-fit:cover;object-position:top center;border-radius:6px;margin-top:6px;border:1px solid var(–border);display:none;}
+.img-thumb.vis{display:block;}
+
+/* CARD PREVIEW SCALING
+Card CSS uses rem fractions designed for ~96dpi print (1rem=96px gives .44rem=42px).
+In a browser with 15-16px root font, .44rem = ~7px — unreadable.
+We set a large font-size on the preview wrapper so rem units resolve correctly. */
+#pc .card, #dpc .card{font-size:96px;}
+
 /* PRINT */
 .psheet{display:none;}
 @media print{
@@ -180,6 +195,7 @@ body{background:white;margin:0;padding:0;}
 <script>
 // ── State — defined early so inline onclick= handlers can call functions ──
 var cards=[], cStyle='broadside', cSketch='woodcut', cFmt='3x4', dark=true, cardBg='';
+var imgData=''; // base64 data URL from file upload (overrides URL field when set)
 var _domReady=false;
 
 var FMTS={
@@ -193,8 +209,8 @@ var FMTS={
 
 function setTheme(d){
   dark=d;
-  var r=document.getElementById('root');
-  if(!r) return;
+  // Apply to <html> element — works whether called early or late
+  var r=document.getElementById('root')||document.documentElement;
   r.className=dark?'dk':'lt';
   var ti=document.getElementById('ticon');
   var tl=document.getElementById('tlabel');
@@ -365,12 +381,40 @@ function buildCard(d){
 
 function getVal(id){var e=document.getElementById(id);return e?e.value:'';}
 
+function handleUpload(input, thumbId, urlId){
+  var file=input.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    imgData=e.target.result;
+    // Show thumbnail
+    var thumb=document.getElementById(thumbId);
+    if(thumb){thumb.src=imgData;thumb.classList.add('vis');}
+    // Clear the URL field since upload takes priority
+    var urlEl=document.getElementById(urlId);
+    if(urlEl) urlEl.value='';
+    // Sync both mobile/desktop thumb+url
+    ['mim','dim'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    ['mthumb','dthumb'].forEach(function(id){var el=document.getElementById(id);if(el){el.src=imgData;el.classList.add('vis');}});
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearUpload(){
+  imgData='';
+  ['mthumb','dthumb'].forEach(function(id){var el=document.getElementById(id);if(el){el.src='';el.classList.remove('vis');}});
+  updatePreview();
+}
+
 function getData(){
   var desktop=window.innerWidth>=768;
   var p=desktop?'d':'m';
+  // Use uploaded image data if available, otherwise fall back to URL field
+  var imgSrc=imgData||getVal(p+'im');
   return{name:getVal(p+'nm'),dates:getVal(p+'dt'),role:getVal(p+'ro'),
     nation:getVal(p+'na'),era:getVal(p+'er'),quote:getVal(p+'qu'),
-    url:getVal(p+'ur'),series:getVal(p+'se'),img:getVal(p+'im'),
+    url:getVal(p+'ur'),series:getVal(p+'se'),img:imgSrc,imgIsUpload:!!imgData,
     style:cStyle,sketch:cSketch,fmt:cFmt,bg:cardBg};
 }
 
@@ -437,8 +481,18 @@ function loadCard(i){
   var d=cards[i];
   var desktop=window.innerWidth>=768;
   var p=desktop?'d':'m';
-  var map={name:'nm',dates:'dt',role:'ro',nation:'na',era:'er',quote:'qu',url:'ur',series:'se',img:'im'};
+  var map={name:'nm',dates:'dt',role:'ro',nation:'na',era:'er',quote:'qu',url:'ur',series:'se'};
   Object.keys(map).forEach(function(k){var e=document.getElementById(p+map[k]);if(e)e.value=d[k]||'';});
+  // Restore image — uploaded base64 or URL
+  if(d.imgIsUpload && d.img){
+    imgData=d.img;
+    ['mim','dim'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    ['mthumb','dthumb'].forEach(function(id){var el=document.getElementById(id);if(el){el.src=d.img;el.classList.add('vis');}});
+  } else {
+    imgData='';
+    var imEl=document.getElementById(p+'im'); if(imEl) imEl.value=d.img||'';
+    ['mthumb','dthumb'].forEach(function(id){var el=document.getElementById(id);if(el){el.src='';el.classList.remove('vis');}});
+  }
   cStyle=d.style;cSketch=d.sketch||'woodcut';cFmt=d.fmt||'3x4';
   document.querySelectorAll('.sk-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===cSketch);});
   document.querySelectorAll('.st-tog').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===cStyle);});
@@ -463,6 +517,10 @@ function syncInputs(){
     Object.keys(map).forEach(function(k){var m=document.getElementById('m'+map[k]),d=document.getElementById('d'+map[k]);if(m&&d)d.value=m.value;});
   } else {
     Object.keys(map).forEach(function(k){var m=document.getElementById('m'+map[k]),d=document.getElementById('d'+map[k]);if(m&&d)m.value=d.value;});
+  }
+  // Sync thumbnail if upload is active
+  if(imgData){
+    ['mthumb','dthumb'].forEach(function(id){var el=document.getElementById(id);if(el){el.src=imgData;el.classList.add('vis');}});
   }
 }
 </script>
@@ -511,7 +569,13 @@ function syncInputs(){
     <div class="field"><label>Quote / Excerpt</label><textarea id="mqu" oninput="updatePreview()">"Once you learn to read, you will be forever free."</textarea></div>
     <div class="field"><label>NFC URL</label><input type="text" id="mur" placeholder="https://..." oninput="updatePreview()"></div>
     <div class="field"><label>Series Name</label><input type="text" id="mse" placeholder="Voices of Dissent · Vol. I" value="Voices of Dissent · Vol. I" oninput="updatePreview()"></div>
-    <div class="field"><label>Portrait Image URL</label><input type="text" id="mim" value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg" oninput="updatePreview()"></div>
+    <div class="field"><label>Portrait Image</label>
+      <div class="img-row">
+        <input type="text" id="mim" placeholder="https://..." oninput="imgData='';updatePreview()">
+        <label class="upload-btn">📷 Upload<input type="file" accept="image/*" onchange="handleUpload(this,'mthumb','mim')"></label>
+      </div>
+      <img id="mthumb" class="img-thumb" alt="">
+    </div>
   </div>
   <div class="brow">
     <button class="btn bg" onclick="saveCard()">＋ Add to Sheet</button>
@@ -617,7 +681,13 @@ function syncInputs(){
         <div class="field"><label>Quote / Excerpt</label><textarea id="dqu" oninput="updatePreview()">"Once you learn to read, you will be forever free."</textarea></div>
         <div class="field"><label>NFC URL</label><input type="text" id="dur" placeholder="https://..." oninput="updatePreview()"></div>
         <div class="field"><label>Series Name</label><input type="text" id="dse" placeholder="Voices of Dissent · Vol. I" value="Voices of Dissent · Vol. I" oninput="updatePreview()"></div>
-        <div class="field"><label>Portrait Image URL</label><input type="text" id="dim" value="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Frederick_Douglass_%28circa_1879%29.jpg/440px-Frederick_Douglass_%28circa_1879%29.jpg" oninput="updatePreview()"></div>
+        <div class="field"><label>Portrait Image</label>
+          <div class="img-row">
+            <input type="text" id="dim" placeholder="https://..." oninput="imgData='';updatePreview()">
+            <label class="upload-btn">📷 Upload<input type="file" accept="image/*" onchange="handleUpload(this,'dthumb','dim')"></label>
+          </div>
+          <img id="dthumb" class="img-thumb" alt="">
+        </div>
       </div>
       <div class="panel" style="margin-top:12px;">
         <div class="ptitle">Card Background</div>
