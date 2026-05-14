@@ -528,71 +528,96 @@ function setBg(v) {
   updatePreview();
 }
 
-/* ── Crosshatch canvas renderer ── */
+/* ── Crosshatch canvas renderer (improved) ── */
 function drawCrosshatch(img, canvas) {
   var W = canvas.width, H = canvas.height;
   var ctx = canvas.getContext('2d');
-  var off = document.createElement('canvas');
-  off.width = W; off.height = H;
-  var octx = off.getContext('2d');
-  octx.drawImage(img, 0, 0, W, H);
-  var data = octx.getImageData(0, 0, W, H).data;
 
-  ctx.fillStyle = '#ffffff';
+  // Sample at 2x resolution for better lum accuracy, then render at 1x
+  var SCALE = 2;
+  var off = document.createElement('canvas');
+  off.width = W * SCALE; off.height = H * SCALE;
+  var octx = off.getContext('2d');
+  octx.drawImage(img, 0, 0, W * SCALE, H * SCALE);
+  var data = octx.getImageData(0, 0, W * SCALE, H * SCALE).data;
+  var OW = W * SCALE, OH = H * SCALE;
+
+  // Warm parchment base
+  ctx.fillStyle = '#f5f0e4';
   ctx.fillRect(0, 0, W, H);
 
-  var spacing = 4;
-  ctx.strokeStyle = '#111111';
-  ctx.lineWidth = 0.8;
   ctx.lineCap = 'round';
 
-  function getLum(x, y) {
-    x = Math.max(0, Math.min(W-1, Math.round(x)));
-    y = Math.max(0, Math.min(H-1, Math.round(y)));
-    var i = (y * W + x) * 4;
-    return 1 - (0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2]) / 255;
+  // Sample luminance with a small box-blur (3x3) to reduce noise
+  function getLum(px, py) {
+    px = Math.round(px * SCALE);
+    py = Math.round(py * SCALE);
+    var acc = 0, count = 0;
+    for (var dy = -1; dy <= 1; dy++) {
+      for (var dx = -1; dx <= 1; dx++) {
+        var sx = Math.max(0, Math.min(OW-1, px+dx));
+        var sy = Math.max(0, Math.min(OH-1, py+dy));
+        var i = (sy * OW + sx) * 4;
+        acc += 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+        count++;
+      }
+    }
+    // Apply gamma curve: lift mid-tones, keep deep shadows dark
+    var raw = 1 - (acc / count) / 255;
+    return Math.pow(raw, 0.75);
   }
 
-  ctx.beginPath();
-  for (var d = -H; d < W+H; d += spacing) {
-    var steps = Math.max(W,H)/spacing|0;
-    var drawing = false;
-    for (var s = 0; s <= steps; s++) {
-      var t = s/steps;
-      var px = d + (d+H-d)*t, py = H*t;
-      var lum = getLum(px, py);
-      if (lum > 0.22) { if (!drawing) { ctx.moveTo(px,py); drawing=true; } else ctx.lineTo(px,py); }
-      else drawing = false;
+  // Draws a set of parallel lines at angle `angleDeg`, spacing `sp`
+  // Only draws where getLum(x,y) > threshold
+  function drawLines(angleDeg, sp, threshold, lineW, inkColor) {
+    ctx.strokeStyle = inkColor;
+    ctx.lineWidth = lineW;
+    var rad = angleDeg * Math.PI / 180;
+    var cos = Math.cos(rad), sin = Math.sin(rad);
+    // Perpendicular direction to march lines along
+    var px = -sin, py = cos;
+    // Diagonal extent needed to cover entire canvas
+    var extent = W + H;
+    ctx.beginPath();
+    for (var offset = -extent; offset < extent; offset += sp) {
+      // Origin of this line
+      var ox = W/2 + px * offset;
+      var oy = H/2 + py * offset;
+      // Walk along the line direction
+      var steps = Math.ceil(extent * 2 / sp * sp / 2) + 60;
+      var drawing = false;
+      for (var s = -steps; s <= steps; s++) {
+        var t = s * (sp * 0.5);
+        var sx = ox + cos * t;
+        var sy = oy + sin * t;
+        if (sx < -2 || sx > W+2 || sy < -2 || sy > H+2) { drawing = false; continue; }
+        var lum = getLum(sx, sy);
+        if (lum > threshold) {
+          if (!drawing) { ctx.moveTo(sx, sy); drawing = true; }
+          else ctx.lineTo(sx, sy);
+        } else {
+          drawing = false;
+        }
+      }
     }
+    ctx.stroke();
   }
-  ctx.stroke();
 
-  ctx.beginPath();
-  ctx.lineWidth = 0.7;
-  for (var d2 = -H; d2 < W+H; d2 += spacing) {
-    var steps2 = Math.max(W,H)/spacing|0;
-    var drawing2 = false;
-    for (var s2 = 0; s2 <= steps2; s2++) {
-      var t2 = s2/steps2;
-      var px2 = (d2+H) + (d2-(d2+H))*t2, py2 = H*t2;
-      var lum2 = getLum(px2, py2);
-      if (lum2 > 0.45) { if (!drawing2) { ctx.moveTo(px2,py2); drawing2=true; } else ctx.lineTo(px2,py2); }
-      else drawing2 = false;
-    }
-  }
-  ctx.stroke();
+  // Layer 1: \ diagonal (45°) — light-mid shadows, wide spacing
+  drawLines(45,  5.5, 0.18, 0.9, '#1a120a');
 
-  ctx.beginPath();
-  ctx.lineWidth = 0.6;
-  for (var y = 0; y < H; y += spacing) {
-    var drawing3 = false;
-    for (var x = 0; x < W; x += 2) {
-      var lum3 = getLum(x, y);
-      if (lum3 > 0.68) { if (!drawing3) { ctx.moveTo(x,y); drawing3=true; } else ctx.lineTo(x,y); }
-      else drawing3 = false;
-    }
-  }
-  ctx.stroke();
+  // Layer 2: / diagonal (135°) — mid shadows
+  drawLines(135, 5.5, 0.40, 0.8, '#1a120a');
+
+  // Layer 3: horizontal — darker shadows
+  drawLines(0,   5.0, 0.60, 0.7, '#221508');
+
+  // Layer 4: vertical — deep shadow accent only
+  drawLines(90,  5.0, 0.76, 0.65, '#221508');
+
+  // Slight warm sepia wash over the whole thing for aged-ink feel
+  ctx.fillStyle = 'rgba(120, 80, 20, 0.06)';
+  ctx.fillRect(0, 0, W, H);
 }
 
 function applyCanvasSketch(container) {
